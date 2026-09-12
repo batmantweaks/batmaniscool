@@ -31,7 +31,7 @@ function createWindow() {
       contextIsolation: true,
       sandbox: false,
     },
-    icon: path.join(__dirname, 'assets/icon.png'),
+    icon: path.join(__dirname, 'assets/app-icon.png'),
   });
 
   mainWindow.loadFile('index.html');

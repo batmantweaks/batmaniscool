@@ -10,6 +10,7 @@ files:
   - "!RELEASE-*.md"
   - "!UPDATE_AND_SIGNING.md"
 win:
+  icon: assets/app-icon.png
   target:
     - target: nsis
       arch:
