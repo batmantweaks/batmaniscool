@@ -1101,8 +1101,8 @@ document.addEventListener('DOMContentLoaded', () => {
     low: ['game-mode', 'game-dvr', 'game-bar-overlay', 'background-apps', 'windows-widgets', 'search-highlights', 'transparency', 'edge-background', 'copilot-policy']
   };
   const profileValues = {
-    extreme: { 'power-epp':0, 'power-boost':2, 'power-max':100, 'power-min':100, 'power-cooling':1, 'power-pcie':0, 'power-wifi':0, 'power-disk':0 },
-    balanced: { 'power-epp':50, 'power-boost':1, 'power-max':100, 'power-min':5, 'power-cooling':1 },
+    extreme: { 'power-epp':0, 'power-boost':2, 'power-max':100, 'power-min':100, 'power-cooling':1, 'power-pcie':0, 'power-wifi':0, 'power-disk':0, 'power-rise-threshold':10, 'power-fall-threshold':8, 'power-rise-policy':2 },
+    balanced: { 'power-epp':50, 'power-boost':1, 'power-max':100, 'power-min':5, 'power-cooling':1, 'power-rise-threshold':30, 'power-fall-threshold':20, 'power-rise-policy':0 },
     low: {}
   };
   const replaced = new Set(window.powerOptions.map(item => item.legacy).filter(Boolean));

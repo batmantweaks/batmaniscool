@@ -4,4 +4,6 @@ Added the Update Center flow for signed NSIS releases. The app now exposes check
 
 Added Settings & backups with local JSON export/import for pending review plans and a queue-only undo-all-history action. Imported plans are allowlisted and never bypass Apply Changes.
 
+Added CPU performance rise threshold, performance drop threshold, and rise-policy controls. These are active-plan, plugged-in settings with original-value restore. They are only meaningful on supported non-autonomous CPU power systems; they do not guarantee FPS improvements.
+
 The builder configuration now targets the batmantweaks/batmaniscool GitHub Releases feed. Public releases still require a valid signing identity and GitHub Actions secrets. This release can be used to test the UI and build pipeline, but the current local installer is unsigned.
