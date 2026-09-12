@@ -29,6 +29,24 @@ function runPowerShell(command) {
  */
 const TweaksEngine = {
   runPowerShell,
+  // Read-only checks run before settings that Windows commonly restricts.
+  async checkTweakCompatibility(tweakId) {
+    const administratorOnly = new Set(['hags', 'dynamic-tick', 'power-throttling', 'games-priority-profile', 'memory-compression', 'ntfs-last-access', 'network-adapter-power', 'network-rss', 'network-rsc', 'network-lso', 'sysmain-service', 'search-indexer-service', 'delivery-optimization', 'optimize-tcp', 'long-paths', 'disable-hibernation', 'clean-event-logs', 'clean-update-cache', 'repair-sfc', 'repair-dism', 'repair-winsock', 'create-restore-point']);
+    if (administratorOnly.has(tweakId)) {
+      const elevated = await runPowerShell(`$identity=[Security.Principal.WindowsIdentity]::GetCurrent(); $principal=New-Object Security.Principal.WindowsPrincipal($identity); [Console]::Write($principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))`);
+      if (!elevated.success || elevated.output.trim().toLowerCase() !== 'true') return { ok: false, details: 'This tweak needs administrator permission. Close the app, then right-click it and choose Run as administrator.' };
+    }
+    if (tweakId === 'tcp-fast-open') {
+      const check = await runPowerShell(`$text=netsh int tcp show global | Out-String; if($text -notmatch 'Fast Open'){throw 'TCP Fast Open is unavailable'}; [Console]::Write('supported')`);
+      if (!check.success) return { ok: false, details: 'TCP Fast Open is not available on this Windows version. It was not changed.' };
+    }
+    if (['network-rss', 'network-rsc', 'network-lso'].includes(tweakId)) {
+      const command = tweakId === 'network-rss' ? 'Get-NetAdapterRss' : tweakId === 'network-rsc' ? 'Get-NetAdapterRsc' : 'Get-NetAdapterLso';
+      const check = await runPowerShell(`$adapter=Get-NetAdapter -Physical | Where-Object Status -eq 'Up' | Select-Object -First 1; if(-not $adapter){throw 'No active physical adapter'}; & ${command} -Name $adapter.Name -ErrorAction Stop | Out-Null; [Console]::Write('supported')`);
+      if (!check.success) return { ok: false, details: 'Your active network adapter does not support this advanced setting. It was not changed.' };
+    }
+    return { ok: true };
+  },
   // Diagnostics
   async getSystemStats() {
     const totalMemBytes = os.totalmem();

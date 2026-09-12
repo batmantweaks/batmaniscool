@@ -150,7 +150,11 @@ ipcMain.handle('apply-tweak', async (event, { tweakId, payload = {} }) => {
   
   try {
     TweaksEngine.runPowerShell.lastFailure = null;
-    if (powerOptions.some(item => item.id === tweakId)) {
+    const compatibility = await TweaksEngine.checkTweakCompatibility(tweakId);
+    if (!compatibility.ok) {
+      TweaksEngine.runPowerShell.lastFailure = null;
+      result = { success: false, action: tweakId, details: compatibility.details };
+    } else if (powerOptions.some(item => item.id === tweakId)) {
       applyPower ||= createPowerEngine(TweaksEngine.runPowerShell, path.join(app.getPath('userData'), 'power-backups'));
       result = await applyPower(tweakId, payload);
     } else if ([...catalog, ...retiredCatalog].some(item => item.id === tweakId)) {
