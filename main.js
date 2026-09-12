@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const { execFile } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 const TweaksEngine = require('./tweaks-engine');
 const { catalog, apps: optionalApps } = require('./tweak-catalog');
 const { createCatalogEngine } = require('./catalog-engine');
@@ -62,7 +63,8 @@ function initializeUpdater() {
     autoUpdater.autoDownload = false;
     autoUpdater.on('checking-for-update', () => updateStatus.state = 'Checking for updates…');
     autoUpdater.on('update-not-available', () => { updateStatus.state = 'You are up to date.'; updateStatus.version = null; });
-    autoUpdater.on('update-available', info => { updateStatus.state = 'Update available.'; updateStatus.version = info.version; });
+    autoUpdater.on('update-available', info => { updateStatus.state = 'Update available.'; updateStatus.version = info.version; mainWindow?.webContents.send('update-status', {...updateStatus}); });
+    autoUpdater.on('update-downloaded', () => { updateStatus.state = 'Update downloaded — restart to install.'; mainWindow?.webContents.send('update-status', {...updateStatus}); });
     autoUpdater.on('error', error => { updateStatus.state = 'Update check failed.'; updateStatus.details = error.message; });
   } catch (error) {
     updateStatus.state = 'Update service unavailable.';
@@ -96,6 +98,17 @@ ipcMain.handle('check-for-updates', async () => {
     updateStatus.details = error.message;
   }
   return { ...updateStatus };
+});
+ipcMain.handle('download-update', async () => {
+  if (!autoUpdater || !updateStatus.configured) return { ...updateStatus };
+  try { updateStatus.state = 'Downloading update…'; await autoUpdater.downloadUpdate(); }
+  catch (error) { updateStatus.state = 'Update download failed.'; updateStatus.details = error.message; }
+  return { ...updateStatus };
+});
+ipcMain.handle('install-update', () => {
+  if (!autoUpdater || !updateStatus.configured) return { success: false, details: 'No configured update is ready.' };
+  autoUpdater.quitAndInstall();
+  return { success: true };
 });
 
 ipcMain.handle('open-nvidia-control-panel', async () => {

@@ -18,4 +18,8 @@ nsis:
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
-  artifactName: "${productName}-${version}-setup.${ext}"
+artifactName: "${productName}-${version}-setup.${ext}"
+publish:
+  provider: github
+  owner: batmantweaks
+  repo: batmaniscool

@@ -746,16 +746,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const renderUpdateStatus = status => {
     if (updateStatusText) updateStatusText.textContent = status.version ? `${status.state} Version ${status.version}.` : status.state;
     if (updateButton) { updateButton.disabled = !status.configured; updateButton.title = status.configured ? 'Check the configured release server' : status.details; }
+    if (updateButton && status.state === 'Update available.') { updateButton.textContent = 'Download update'; updateButton.dataset.action = 'download'; updateButton.disabled = false; }
+    if (updateButton && status.state === 'Update downloaded — restart to install.') { updateButton.textContent = 'Restart and install'; updateButton.dataset.action = 'install'; updateButton.disabled = false; }
   };
   window.electronAPI?.getUpdateStatus?.().then(renderUpdateStatus).catch(() => {
     if (updateStatusText) updateStatusText.textContent = 'Update status is unavailable in this build.';
   });
   updateButton?.addEventListener('click', async () => {
     if (updateButton.disabled) return;
+    if (updateButton.dataset.action === 'download') { updateButton.disabled = true; renderUpdateStatus(await window.electronAPI.downloadUpdate()); return; }
+    if (updateButton.dataset.action === 'install') { await window.electronAPI.installUpdate(); return; }
     updateButton.disabled = true; updateButton.textContent = 'Checking…';
     try { renderUpdateStatus(await window.electronAPI.checkForUpdates()); }
     finally { updateButton.textContent = 'Check for updates'; window.electronAPI?.getUpdateStatus?.().then(status => updateButton.disabled = !status.configured); }
   });
+  window.electronAPI?.onUpdateStatus?.(renderUpdateStatus);
 
   document.getElementById('btn-clear-history')?.addEventListener('click', () => {
     if (!window.confirm('Clear the local change history? This does not undo any Windows settings.')) return;
