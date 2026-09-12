@@ -10,11 +10,13 @@ function runPowerShell(command) {
   return new Promise((resolve) => {
     runPowerShell.lastFailure = null;
     command = command.replace(/-ErrorAction SilentlyContinue/g, '-ErrorAction Stop');
-    const script = `$ErrorActionPreference='Stop'; $global:LASTEXITCODE=0; try { ${command}\n if ($LASTEXITCODE -ne 0) { throw "Windows command exited with code $LASTEXITCODE" } } catch { [Console]::Error.WriteLine($_.Exception.Message); exit 1 }`;
-    execFile('powershell.exe', ['-NoProfile', '-NonInteractive', '-EncodedCommand', Buffer.from(script, 'utf16le').toString('base64')], { timeout: 180000, windowsHide: true, maxBuffer: 4 * 1024 * 1024 }, (error, stdout, stderr) => {
+    const script = `$ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; $global:LASTEXITCODE=0; try { ${command}\n if ($LASTEXITCODE -ne 0) { throw "Windows command exited with code $LASTEXITCODE" } } catch { [Console]::Error.WriteLine($_.Exception.Message); exit 1 }`;
+    execFile('powershell.exe', ['-NoProfile', '-NonInteractive', '-OutputFormat', 'Text', '-EncodedCommand', Buffer.from(script, 'utf16le').toString('base64')], { timeout: 180000, windowsHide: true, maxBuffer: 4 * 1024 * 1024 }, (error, stdout, stderr) => {
       if (error) {
-        runPowerShell.lastFailure = stderr || error.message;
-        resolve({ success: false, output: stderr || error.message });
+        const raw = String(stderr || stdout || error.message).replace(/\s+/g, ' ').trim();
+        const lower = raw.toLowerCase();
+        runPowerShell.lastFailure = lower.includes('access is denied') || lower.includes('access denied') ? 'Administrator permission is required for this Windows setting.' : lower.includes('msft_netadapter') || lower.includes('not supported') ? 'Your active network adapter or Windows version does not support this setting.' : lower.includes('exited with code') ? 'This Windows version does not support that command.' : 'Windows could not apply this setting on this PC.';
+        resolve({ success: false, output: runPowerShell.lastFailure });
       } else {
         resolve({ success: true, output: stdout ? stdout.trim() : '' });
       }
@@ -453,24 +455,24 @@ const TweaksEngine = {
 
   async toggleNetworkRss(enable) {
     const command = enable
-      ? `Get-NetAdapter -Physical | Where-Object Status -eq 'Up' | Enable-NetAdapterRss -Confirm:$false`
-      : `Get-NetAdapter -Physical | Where-Object Status -eq 'Up' | Disable-NetAdapterRss -Confirm:$false`;
+      ? `Get-NetAdapter -Physical | Where-Object Status -eq 'Up' | ForEach-Object { Enable-NetAdapterRss -Name $_.Name -Confirm:$false -ErrorAction Stop }`
+      : `Get-NetAdapter -Physical | Where-Object Status -eq 'Up' | ForEach-Object { Disable-NetAdapterRss -Name $_.Name -Confirm:$false -ErrorAction Stop }`;
     const res = await runPowerShell(command);
     return { action: 'Network Receive Side Scaling', success: res.success, details: enable ? 'Enabled RSS on active physical network adapters.' : 'Disabled RSS on active physical network adapters.' };
   },
 
   async toggleNetworkRsc(disable) {
     const command = disable
-      ? `Get-NetAdapter -Physical | Where-Object Status -eq 'Up' | Disable-NetAdapterRsc -Confirm:$false`
-      : `Get-NetAdapter -Physical | Where-Object Status -eq 'Up' | Enable-NetAdapterRsc -Confirm:$false`;
+      ? `Get-NetAdapter -Physical | Where-Object Status -eq 'Up' | ForEach-Object { Disable-NetAdapterRsc -Name $_.Name -Confirm:$false -ErrorAction Stop }`
+      : `Get-NetAdapter -Physical | Where-Object Status -eq 'Up' | ForEach-Object { Enable-NetAdapterRsc -Name $_.Name -Confirm:$false -ErrorAction Stop }`;
     const res = await runPowerShell(command);
     return { action: 'Network Receive Segment Coalescing', success: res.success, details: disable ? 'Disabled RSC on active physical network adapters.' : 'Re-enabled RSC on active physical network adapters.' };
   },
 
   async toggleNetworkLso(disable) {
     const command = disable
-      ? `Get-NetAdapter -Physical | Where-Object Status -eq 'Up' | Disable-NetAdapterLso -Confirm:$false`
-      : `Get-NetAdapter -Physical | Where-Object Status -eq 'Up' | Enable-NetAdapterLso -Confirm:$false`;
+      ? `Get-NetAdapter -Physical | Where-Object Status -eq 'Up' | ForEach-Object { Disable-NetAdapterLso -Name $_.Name -Confirm:$false -ErrorAction Stop }`
+      : `Get-NetAdapter -Physical | Where-Object Status -eq 'Up' | ForEach-Object { Enable-NetAdapterLso -Name $_.Name -Confirm:$false -ErrorAction Stop }`;
     const res = await runPowerShell(command);
     return { action: 'Network Large Send Offload', success: res.success, details: disable ? 'Disabled LSO on active physical network adapters.' : 'Re-enabled LSO on active physical network adapters.' };
   },
@@ -721,9 +723,9 @@ const TweaksEngine = {
 
   async toggleWindowsWidgets(disable) {
     const value = disable ? 0 : 1;
-    const cmd = `New-Item -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Dsh" -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Dsh" -Name "AllowNewsAndInterests" -Value ${value} -Type DWord -Force -ErrorAction SilentlyContinue`;
+    const cmd = `New-Item -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" -Force -ErrorAction Stop; Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" -Name "TaskbarDa" -Value ${value} -Type DWord -Force -ErrorAction Stop`;
     const res = await runPowerShell(cmd);
-    return { action: 'Windows Widgets', success: res.success, details: disable ? 'Disabled Windows Widgets and news feed' : 'Enabled Windows Widgets and news feed' };
+    return { action: 'Windows Widgets', success: res.success, details: disable ? 'Hidden the Widgets button for this Windows user. Restart Explorer or sign out to see it.' : 'Shown the Widgets button for this Windows user. Restart Explorer or sign out to see it.' };
   },
 
   // === SHELL & EXPLORER ===

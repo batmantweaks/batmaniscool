@@ -50,7 +50,7 @@ const { createCatalogEngine } = require('../catalog-engine');
   assert.equal((await engine.removeBloatApps("'; Remove-Item C:\\ -Recurse; '")).success,false);
   nativeFailure = true;
   assert.equal((await engine.runPowerShell('Write-Output test')).success,false);
-  assert.equal(engine.runPowerShell.lastFailure,'Access denied');
+  assert.equal(engine.runPowerShell.lastFailure,'Administrator permission is required for this Windows setting.');
   const parser = `$scripts=[Console]::In.ReadToEnd() | ConvertFrom-Json; foreach ($script in $scripts) { $tokens=$null; $errors=$null; [void][System.Management.Automation.Language.Parser]::ParseInput($script,[ref]$tokens,[ref]$errors); if ($errors.Count) { throw ($errors | Out-String) } }; 'PowerShell syntax checked without execution.'`;
   console.log(execFileSync('powershell.exe',['-NoProfile','-NonInteractive','-EncodedCommand',Buffer.from(parser,'utf16le').toString('base64')],{input:JSON.stringify(commands),windowsHide:true,encoding:'utf8',maxBuffer:1024*1024}));
   console.log(`PASS ${catalog.length} catalog apply/restore scripts, ${apps.length} individual plus one curated full-debloat request, rejected unknown requests, surfaced command errors.`);

@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'copilot-policy': ['Windows Copilot', 'Sets a current-user Windows policy that turns off Copilot.'],
     'telemetry': ['Windows Telemetry', 'Changes Windows diagnostic-data policy and attempts to stop the related tracking service.'],
     'background-apps': ['Background Apps', 'Prevents Microsoft Store apps from continuing selected tasks in the background for this Windows user.'],
-    'windows-widgets': ['Windows Widgets', 'Changes the policy that allows the Widgets and news feed experience.'],
+    'windows-widgets': ['Windows Widgets Button', 'Shows or hides the Widgets button for your Windows user. Restart Explorer or sign out to see the change.'],
     'search-highlights': ['Search Highlights', 'Turns off changing online content displayed in the Windows Search interface.'],
     'windows-spotlight': ['Windows Spotlight', 'Turns off Windows Spotlight features and suggested lock-screen background content.'],
     'tailored-experiences': ['Tailored Experiences', 'Stops Windows from using diagnostic information to customize selected experiences.'],
