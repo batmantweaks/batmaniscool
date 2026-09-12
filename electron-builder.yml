@@ -1,0 +1,21 @@
+appId: com.batmaniscool.utility
+productName: batmaniscool
+directories:
+  output: dist/installer-v4.5
+files:
+  - "**/*"
+  - "!dist/**"
+  - "!qa-output/**"
+  - "!tests/**"
+  - "!RELEASE-*.md"
+  - "!UPDATE_AND_SIGNING.md"
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  artifactName: "${productName}-${version}-setup.${ext}"

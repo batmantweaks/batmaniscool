@@ -1,0 +1,10 @@
+node_modules/
+dist/
+qa-output/
+*.log
+.env
+.env.*
+*.pfx
+*.p12
+download_c418.js
+test_urls.js

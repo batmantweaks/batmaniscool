@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>batmaniscool System Utility</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+</head>
+<body>
+
+  <!-- Floating Pending Changes Action Bar -->
+  <div class="pending-bar" id="pending-changes-bar">
+    <div class="pending-info">
+      <i class="fa-solid fa-bolt" style="color: var(--accent-amber);"></i>
+      <span>Pending Tweak Changes</span>
+      <span class="pending-count-badge" id="pending-count-label">0</span>
+    </div>
+    <div class="pending-actions">
+      <button class="btn-secondary" id="btn-reset-pending" style="padding: 7px 12px; font-size: 12px;">Reset</button>
+      <button class="btn-primary" id="btn-apply-pending" style="padding: 7px 16px; font-size: 12px;">
+        <i class="fa-solid fa-check"></i>
+        <span>APPLY CHANGES</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Security Gatekeeper Overlay -->
+  <div class="login-overlay" id="bat-login-overlay">
+    <div class="login-card" id="bat-login-card">
+      <section class="login-aside">
+        <div class="login-brand-icon"><svg viewBox="0 0 100 48" aria-label="Bat emblem" role="img"><path fill="currentColor" d="M2 3 25 12 39 7 44 19 46 5 50 12 54 5 56 19 61 7 75 12 98 3 87 26 73 23 62 30 50 46 38 30 27 23 13 26Z"/></svg></div>
+        <p class="login-eyebrow">BATMANISCOOL / PC TUNING</p>
+        <h1>Your machine.<br><em>Your advantage.</em></h1>
+        <p class="login-aside-copy">Fine-tune Windows, clear the clutter, and build a setup that feels like yours.</p>
+        <div class="login-features">
+          <span><i class="fa-solid fa-circle-check"></i> Review before applying</span>
+          <span><i class="fa-solid fa-circle-check"></i> Local account profile</span>
+          <span><i class="fa-solid fa-circle-check"></i> Live system overview</span>
+        </div>
+      </section>
+
+      <section class="login-main">
+        <div class="login-header-group">
+          <div class="login-title">Welcome back.</div>
+          <div class="login-subtitle">Your tuning workspace is ready.</div>
+        </div>
+
+        <button class="developer-profile" id="btn-developer-profile" type="button">
+          <span class="developer-avatar"><i class="fa-solid fa-code"></i></span>
+          <span class="developer-profile-copy"><strong>Developer profile</strong><small>Local developer workspace</small></span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+
+      <!-- Auth Segment Switcher -->
+      <div class="auth-mode-toggle">
+        <button class="auth-toggle-btn active" id="btn-mode-login">Sign In</button>
+        <button class="auth-toggle-btn" id="btn-mode-signup">Create Account</button>
+      </div>
+
+      <div class="login-status-msg" id="login-status-msg"></div>
+
+      <!-- LOG IN FORM -->
+      <form class="login-form" id="bat-login-form">
+        <div class="input-group">
+          <label class="input-label" for="login-username">Username</label>
+          <div class="field-control"><i class="fa-regular fa-user"></i><input type="text" id="login-username" class="login-input" placeholder="Enter your username" required autocomplete="username" maxlength="32"></div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label" for="login-password">Password</label>
+          <div class="field-control"><i class="fa-solid fa-lock"></i><input type="password" id="login-password" class="login-input" placeholder="Enter your password" required autocomplete="current-password"><button class="password-toggle" type="button" data-password-toggle="login-password" aria-label="Show password"><i class="fa-regular fa-eye"></i></button></div>
+        </div>
+
+        <label class="remember-control"><input type="checkbox" id="remember-user"><span>Remember my username on this device</span></label>
+
+        <button type="submit" class="btn-primary" style="justify-content: center; width: 100%; margin-top: 4px;">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>Sign In</span>
+        </button>
+      </form>
+
+      <!-- SIGN UP FORM -->
+      <form class="login-form" id="bat-signup-form" style="display: none;">
+        <div class="input-group">
+          <label class="input-label" for="signup-username">Username</label>
+          <div class="field-control"><i class="fa-regular fa-user"></i><input type="text" id="signup-username" class="login-input" placeholder="Choose a username" required autocomplete="username" maxlength="32"></div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label" for="signup-password">Password</label>
+          <div class="field-control"><i class="fa-solid fa-lock"></i><input type="password" id="signup-password" class="login-input" placeholder="Create a password" required autocomplete="new-password"><button class="password-toggle" type="button" data-password-toggle="signup-password" aria-label="Show password"><i class="fa-regular fa-eye"></i></button></div>
+          <div class="password-meter" aria-hidden="true"><span id="password-strength-bar"></span></div><span class="password-hint" id="password-strength-text">Use 8+ characters with a mix of letters and numbers.</span>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label" for="signup-confirm-pass">Confirm Password</label>
+          <div class="field-control"><i class="fa-solid fa-lock"></i><input type="password" id="signup-confirm-pass" class="login-input" placeholder="Confirm your password" required autocomplete="new-password"><button class="password-toggle" type="button" data-password-toggle="signup-confirm-pass" aria-label="Show password"><i class="fa-regular fa-eye"></i></button></div>
+        </div>
+
+        <button type="submit" class="btn-primary" style="justify-content: center; width: 100%; margin-top: 4px;">
+          <i class="fa-solid fa-user-plus"></i>
+          <span>Create Account</span>
+        </button>
+      </form>
+
+      <!-- Loader Bar -->
+      <div class="login-loader-container" id="login-loader">
+        <div class="login-loader-text" id="login-loader-status">Authenticating credentials...</div>
+        <div class="login-loader-bg">
+          <div class="login-loader-fill" id="login-loader-bar"></div>
+        </div>
+      </div>
+      <p class="login-footnote"><i class="fa-solid fa-lock"></i> Your account information stays on this computer.</p>
+      </section>
+    </div>
+  </div>
+
+  <!-- Frameless Titlebar -->
+  <div class="titlebar">
+    <div class="titlebar-brand">
+      <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <span class="brand-wordmark"><strong>BATMANISCOOL</strong><small>PC TUNING UTILITY</small></span>
+    </div>
+    <div class="titlebar-controls">
+      <button class="win-btn" id="btn-toggle-music" title="Toggle Focus Audio" style="width: auto; padding: 0 8px; gap: 5px;">
+        <i class="fa-solid fa-music" style="color: var(--accent-amber);"></i>
+        <span style="font-size: 11px;">Focus Audio</span>
+      </button>
+      <button class="win-btn" id="btn-minimize" title="Minimize"><i class="fa-solid fa-minus"></i></button>
+      <button class="win-btn" id="btn-maximize" title="Maximize"><i class="fa-regular fa-square"></i></button>
+      <button class="win-btn close" id="btn-close" title="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  </div>
+
+  <div class="app-container">
+
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="nav-section">
+        <div class="nav-section-title">Workspace</div>
+        <nav class="nav-menu">
+          <div class="nav-item active" data-tab="tab-dashboard">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Control Center</span>
+          </div>
+          <div class="nav-item" data-tab="tab-gadgets">
+            <i class="fa-solid fa-crosshairs"></i>
+            <span>Live Monitor</span>
+          </div>
+        </nav>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Tune your PC</div>
+        <nav class="nav-menu">
+          <div class="nav-item" data-tab="tab-performance">
+            <i class="fa-solid fa-gauge-high"></i>
+            <span>Performance</span>
+          </div>
+          <div class="nav-item" data-tab="tab-nvidia">
+            <i class="fa-solid fa-display"></i>
+            <span>NVIDIA GPU</span>
+          </div>
+          <div class="nav-item" data-tab="tab-stealth">
+            <i class="fa-solid fa-user-secret"></i>
+            <span>Privacy & Security</span>
+          </div>
+          <div class="nav-item" data-tab="tab-repair">
+            <i class="fa-solid fa-wrench"></i>
+            <span>System Repair</span>
+          </div>
+          <div class="nav-item" data-tab="tab-shell">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Explorer & Shell</span>
+          </div>
+          <div class="nav-item" data-tab="tab-personalize">
+            <i class="fa-solid fa-palette"></i>
+            <span>Personalize</span>
+          </div>
+          <div class="nav-item" data-tab="tab-history">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>History & Undo</span>
+          </div>
+          <div class="nav-item" data-tab="tab-maintenance">
+            <i class="fa-solid fa-broom"></i>
+            <span>Disk Cleanup</span>
+          </div>
+          <div class="nav-item" data-tab="tab-debloat">
+            <i class="fa-solid fa-box-archive"></i>
+            <span>Debloat</span>
+          </div>
+        </nav>
+      </div>
+
+      <div class="nav-section nav-help-section">
+        <div class="nav-section-title">App</div>
+        <nav class="nav-menu">
+          <div class="nav-item" data-tab="tab-about"><i class="fa-solid fa-circle-info"></i><span>About</span></div>
+          <div class="nav-item" data-tab="tab-support"><i class="fa-solid fa-life-ring"></i><span>Support</span></div>
+          <div class="nav-item" data-tab="tab-privacy"><i class="fa-solid fa-shield-halved"></i><span>Privacy</span></div>
+        </nav>
+      </div>
+
+      <div class="sidebar-status-box">
+        <div class="sys-indicator">
+          <span>Batmode Status</span>
+          <div class="indicator-badge">
+            <div class="pulse-dot"></div>
+            <span>Optimal</span>
+          </div>
+        </div>
+        <div style="font-size: 11px; color: var(--text-dim);" id="sys-os-text">
+          Windows 11 x64
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Viewport -->
+    <main class="main-viewport">
+
+      <!-- TAB 1: DASHBOARD -->
+      <section id="tab-dashboard" class="page-tab-content active">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Control Center</h1>
+            <p class="page-subtitle">A clean view of what matters, with every change under your control.</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-secondary" id="btn-scan-system">
+              <i class="fa-solid fa-magnifying-glass-chart" style="color: var(--accent-cyan);"></i>
+              <span>Scan My PC</span>
+            </button>
+            <button class="btn-secondary" id="btn-open-changelog">
+              <i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-purple);"></i>
+              <span>Changelog</span>
+            </button>
+            <button class="btn-secondary" id="btn-toggle-music-dashboard">
+              <i class="fa-solid fa-music" style="color: var(--accent-amber);"></i>
+              <span>Focus Audio</span>
+            </button>
+            <button class="btn-primary" id="btn-quick-optimize">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              <span>Queue Quick Tune-up</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="command-center">
+          <div class="command-center-copy">
+            <div class="eyebrow"><span class="live-dot"></span>SYSTEM STATUS</div>
+            <h2>Your PC. Your settings. Your call.</h2>
+            <p>Build a review queue, look over the changes, and apply only what you want—when you want.</p>
+          </div>
+          <div class="command-center-statuses" aria-label="System status">
+            <div class="command-status">
+              <i class="fa-solid fa-shield-halved"></i>
+              <div><span>Protection</span><strong>Standing by</strong></div>
+            </div>
+            <div class="command-status">
+              <i class="fa-solid fa-bolt"></i>
+              <div><span>Optimization</span><strong>Ready</strong></div>
+            </div>
+            <div class="command-status">
+              <i class="fa-solid fa-satellite-dish"></i>
+              <div><span>Telemetry</span><strong>Live</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="queue-note"><i class="fa-solid fa-shield-halved"></i><span><strong>Safe by default.</strong> Buttons and switches only add items to your review queue. Nothing changes until you choose <b>Apply Changes</b>.</span></div>
+
+        <section class="trust-panel">
+          <div class="trust-panel-copy"><div class="trust-icon"><i class="fa-solid fa-heart"></i></div><div><span class="scan-kicker">A CALMER WAY TO TUNE</span><h3>You’re always in control.</h3><p>Read what a tweak does, add only the changes you want, and create a restore point before applying anything important.</p></div></div>
+          <button class="btn-secondary" id="btn-queue-restore-point"><i class="fa-solid fa-life-ring"></i><span>Queue a restore point</span></button>
+        </section>
+
+        <section class="music-studio" aria-label="Focus audio controls">
+          <div class="music-studio-intro"><div class="music-studio-icon"><i class="fa-solid fa-wave-square"></i></div><div><span class="scan-kicker">FOCUS AUDIO</span><h3>Set the mood while you tune.</h3><p>Local ambient soundscapes—no streaming, no ads, and off by default.</p></div></div>
+          <div class="music-controls"><label>Soundscape<select class="select-input" id="music-style"><option value="focus">Focus</option><option value="warm">Warm</option><option value="night">Night</option><option value="deep">Deep Space</option><option value="arcade">Arcade</option></select></label><label>Volume<input id="music-volume" type="range" min="0" max="100" value="35"></label><label>Session<select class="select-input" id="music-timer"><option value="0">No timer</option><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="60">60 minutes</option></select></label><label class="remember-control"><input id="music-autoplay" type="checkbox"><span>Play when I sign in</span></label><label class="remember-control"><input id="music-ui-sounds" type="checkbox" checked><span>Interface sounds</span></label><button class="btn-secondary" id="btn-toggle-music-studio"><i class="fa-solid fa-play"></i><span>Play audio</span></button></div>
+        </section>
+
+        <section class="scan-results" id="scan-results" hidden aria-live="polite">
+          <div class="scan-summary"><div class="scan-score" id="scan-score">--</div><div><span class="scan-kicker">LOCAL SYSTEM SCAN</span><h3 id="scan-title">Ready to scan</h3><p id="scan-description">Checks your current memory, storage, and processor load without changing a setting.</p></div></div>
+          <div class="scan-recommendations" id="scan-recommendations"></div>
+        </section>
+
+        <div class="dashboard-grid">
+          <!-- CPU -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-title">CPU Utilization</span>
+              <div class="metric-icon"><i class="fa-solid fa-microchip"></i></div>
+            </div>
+            <div class="metric-value-row">
+              <span class="metric-number" id="cpu-load-val">16</span>
+              <span class="metric-unit">%</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="cpu-bar" style="width: 16%;"></div>
+            </div>
+            <div style="font-size: 11px; color: var(--text-dim);" id="cpu-model-text">
+              Loading Processor...
+            </div>
+          </div>
+
+          <!-- RAM -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-title">RAM Usage</span>
+              <div class="metric-icon"><i class="fa-solid fa-memory"></i></div>
+            </div>
+            <div class="metric-value-row">
+              <span class="metric-number" id="ram-usage-val">38</span>
+              <span class="metric-unit">%</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="ram-bar" style="width: 38%;"></div>
+            </div>
+            <div style="font-size: 11px; color: var(--text-dim);" id="ram-detail-text">
+              6.1 GB / 16.0 GB Used
+            </div>
+          </div>
+
+          <!-- Disk C:\ -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-title">Disk Storage (C:)</span>
+              <div class="metric-icon"><i class="fa-solid fa-hard-drive"></i></div>
+            </div>
+            <div class="metric-value-row">
+              <span class="metric-number" id="disk-free-val">142</span>
+              <span class="metric-unit">GB Free</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: 72%;"></div>
+            </div>
+            <div style="font-size: 11px; color: var(--text-dim);" id="disk-detail-text">
+              142.5 GB Free of 512 GB
+            </div>
+          </div>
+
+          <!-- Health -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-title">System Health</span>
+              <div class="metric-icon" style="color: var(--accent-amber);"><i class="fa-solid fa-heart-pulse"></i></div>
+            </div>
+            <div class="metric-value-row">
+              <span class="metric-number" style="color: var(--accent-amber);">100</span>
+              <span class="metric-unit">Score</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: 100%; background: var(--accent-amber);"></div>
+            </div>
+            <div style="font-size: 11px; color: var(--text-dim);" id="uptime-text">
+              Uptime: 3.5 Hours
+            </div>
+          </div>
+        </div>
+
+        <!-- Highlights -->
+        <div class="tweaks-section">
+          <div class="section-label">
+            <i class="fa-solid fa-bolt" style="color: var(--accent-amber);"></i>
+            <span>Popular quick actions</span>
+          </div>
+          <div class="tweaks-grid">
+            <div class="tweak-card">
+              <div class="tweak-info">
+                <div class="tweak-title">Flush Memory Standby List</div>
+                <div class="tweak-desc">Reclaims idle system memory for active applications</div>
+              </div>
+              <button class="btn-secondary" id="btn-clean-ram">
+                <i class="fa-solid fa-memory"></i>
+                <span>Queue RAM cleanup</span>
+              </button>
+            </div>
+
+            <div class="tweak-card">
+              <div class="tweak-info">
+                <div class="tweak-title">Flush Resolver DNS Cache</div>
+                <div class="tweak-desc">Clears outdated cached IP records to fix resolution delays</div>
+              </div>
+              <button class="btn-secondary" id="btn-quick-flush-dns">
+                <i class="fa-solid fa-rotate"></i>
+                <span>Queue DNS flush</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: PROCESS & NETWORK -->
+      <section id="tab-gadgets" class="page-tab-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Process & Network</h1>
+            <p class="page-subtitle">Inspect heavy background applications and test DNS server latency</p>
+          </div>
+          <button class="btn-secondary" id="btn-refresh-gadgets">
+            <i class="fa-solid fa-rotate"></i>
+            <span>Refresh Diagnostics</span>
+          </button>
+        </div>
+
+        <!-- Ping Latency HUD -->
+        <div class="tweaks-section">
+          <div class="section-label">
+            <i class="fa-solid fa-network-wired"></i>
+            <span>Live DNS Ping Latency (ms)</span>
+          </div>
+          <div class="ping-grid">
+            <div class="ping-card">
+              <span class="ping-name">Cloudflare (1.1.1.1)</span>
+              <span class="ping-ms" id="ping-cloudflare">12 ms</span>
+            </div>
+            <div class="ping-card">
+              <span class="ping-name">Google (8.8.8.8)</span>
+              <span class="ping-ms" id="ping-google">14 ms</span>
+            </div>
+            <div class="ping-card">
+              <span class="ping-name">Quad9 (9.9.9.9)</span>
+              <span class="ping-ms" id="ping-quad9">18 ms</span>
+            </div>
+            <div class="ping-card">
+              <span class="ping-name">OpenDNS</span>
+              <span class="ping-ms" id="ping-opendns">21 ms</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Process Hunter Table -->
+        <div class="tweaks-section">
+          <div class="section-label">
+            <i class="fa-solid fa-list-check"></i>
+            <span>Top RAM Consumers</span>
+          </div>
+          <div class="tweak-card" style="display: block; padding: 0; overflow: hidden;">
+            <table class="process-table">
+              <thead>
+                <tr>
+                  <th>PID</th>
+                  <th>Process Name</th>
+                  <th>RAM Usage</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="process-table-body">
+                <tr><td colspan="4" style="text-align: center;">Scanning processes...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- PERFORMANCE -->
+      <section id="tab-performance" class="page-tab-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Performance Tuning</h1>
+            <p class="page-subtitle">Dial in your setup. Gaming, input, power, and connection controls in one place.</p>
+          </div>
+        </div>
+
+        <div class="tuning-profiles" aria-label="Performance tuning profiles">
+          <button class="tuning-profile extreme" type="button" data-tuning-profile="extreme"><i class="fa-solid fa-bolt"></i><span><strong>Extreme Competitive</strong><small>Aggressive settings to test. Higher heat and power use.</small></span><b>Queue profile</b></button>
+          <button class="tuning-profile" type="button" data-tuning-profile="balanced"><i class="fa-solid fa-scale-balanced"></i><span><strong>Balanced Gaming</strong><small>Flexible CPU speeds with lighter gaming settings.</small></span><b>Queue profile</b></button>
+          <button class="tuning-profile low-impact" type="button" data-tuning-profile="low"><i class="fa-solid fa-leaf"></i><span><strong>Low-Impact Tune</strong><small>Background cleanup with modest system changes</small></span><b>Queue profile</b></button>
+        </div>
+
+        <div class="tweaks-section">
+          <div class="tweaks-section-label"><i class="fa-solid fa-gamepad"></i><span>Gaming & graphics</span><small>Restart may be required for some changes.</small></div>
+          <div class="tweaks-grid">
+            <div class="tweak-card" data-tweak="game-mode">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Windows Game Mode</span>
+                  <span class="status-chip" id="chip-game-mode"></span>
+                </div>
+                <div class="tweak-desc">Prioritizes CPU and GPU hardware resources for active games</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="game-mode">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="hags">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Hardware GPU Scheduling</span><span class="status-chip"></span></div><div class="tweak-desc">Lets supported GPUs manage their own VRAM scheduling. A restart may be required.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="hags"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="dynamic-tick">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Dynamic Tick</span><span class="status-chip"></span></div><div class="tweak-desc">Uses a consistent timer while the system is idle. Intended for advanced latency tuning.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="dynamic-tick"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="power-throttling">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Background Power Throttling</span><span class="status-chip"></span></div><div class="tweak-desc">Keeps background workloads from being aggressively slowed down by Windows.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="power-throttling"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="visual-fx">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Best Performance Visual Effects</span>
+                  <span class="status-chip" id="chip-visual-fx"></span>
+                </div>
+                <div class="tweak-desc">Disables window animations & shadows for instant UI response</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="visual-fx">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="paging-executive">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Keep Kernel in Memory</span><span class="status-chip"></span></div><div class="tweak-desc">Prevents parts of the Windows kernel from being paged to disk. Best for systems with ample RAM.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="paging-executive"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="large-system-cache">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Large System Cache</span><span class="status-chip"></span></div><div class="tweak-desc">Allocates a larger cache for file and disk operations. Recommended for desktop systems, not low-memory PCs.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="large-system-cache"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="core-parking">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Unpark CPU Cores</span>
+                  <span class="status-chip" id="chip-core-parking"></span>
+                </div>
+                <div class="tweak-desc">Keeps all CPU cores unparked at 100% active frequency</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="core-parking">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="mouse-accel">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Disable Mouse Acceleration</span>
+                  <span class="status-chip" id="chip-mouse-accel"></span>
+                </div>
+                <div class="tweak-desc">Enforces 1:1 raw mouse pointer precision for gaming accuracy</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="mouse-accel">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="startup-delay">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Disable Startup Delay</span>
+                  <span class="status-chip" id="chip-startup-delay"></span>
+                </div>
+                <div class="tweak-desc">Eliminates Windows startup app launch delay timer</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="startup-delay">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="sticky-keys">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Disable Sticky Keys Shortcut</span>
+                  <span class="status-chip" id="chip-sticky-keys"></span>
+                </div>
+                <div class="tweak-desc">Prevents Shift-Key popups during fast-paced gaming</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="sticky-keys">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="game-dvr">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Disable Xbox Game DVR</span>
+                  <span class="status-chip" id="chip-game-dvr"></span>
+                </div>
+                <div class="tweak-desc">Stops background video recording overhead during gameplay</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="game-dvr">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="network-throttling">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Disable Network Throttling</span>
+                  <span class="status-chip" id="chip-network-throttling"></span>
+                </div>
+                <div class="tweak-desc">Removes network index throttling for lower online game latency</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="network-throttling">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="gaming-responsiveness">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Gaming Multimedia Scheduling</span><span class="status-chip"></span></div><div class="tweak-desc">Prioritizes active game and audio workloads in Windows multimedia scheduling. Registry change; restart recommended.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="gaming-responsiveness"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="usb-selective-suspend">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable USB Selective Suspend</span><span class="status-chip"></span></div><div class="tweak-desc">Keeps USB ports awake on the active power plan to avoid device wake-up delays. Uses more battery.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="usb-selective-suspend"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="pcie-link-state">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable PCIe Link Power Saving</span><span class="status-chip"></span></div><div class="tweak-desc">Keeps the graphics PCIe connection from entering aggressive power-saving states. Can raise heat and power use.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="pcie-link-state"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="processor-boost">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Responsive CPU Boost</span><span class="status-chip"></span></div><div class="tweak-desc">Uses a more responsive CPU boost mode while plugged in. Can increase fan speed and temperatures.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="processor-boost"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="delivery-optimization">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Update P2P Sharing</span><span class="status-chip"></span></div><div class="tweak-desc">Stops Windows Update from sharing downloads with other PCs in the background.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="delivery-optimization"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card">
+              <div class="tweak-info">
+                <div class="tweak-title">TCP Auto-Tuning Optimization</div>
+                <div class="tweak-desc">Optimizes TCP window size & CTCP congestion provider</div>
+              </div>
+              <button class="btn-secondary" id="btn-optimize-tcp">
+                <i class="fa-solid fa-wifi"></i>
+                <span>Add to Queue</span>
+              </button>
+            </div>
+
+            <div class="tweak-card" data-tweak="power-plan">
+              <div class="tweak-info">
+                <div class="tweak-title">Power Scheme Selector</div>
+                <div class="tweak-desc">Switch hardware power consumption & throttling profiles</div>
+              </div>
+              <select class="select-input tweak-select" data-tweak-id="power-plan" id="select-power-plan">
+                <option value="balanced">Balanced</option>
+                <option value="high">High Performance</option>
+                <option value="ultimate" selected>Ultimate Performance</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="tweaks-section">
+          <div class="tweaks-section-label"><i class="fa-solid fa-gauge-high"></i><span>FPS & input-delay helpers</span><small>Optional background-load controls. These can help consistency, but do not guarantee more FPS.</small></div>
+          <div class="tweaks-grid">
+            <div class="tweak-card" data-tweak="background-apps">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Restrict Background Apps</span><span class="status-chip"></span></div><div class="tweak-desc">Stops Store apps from using CPU, memory, and network in the background for this Windows user.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="background-apps"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="windows-widgets">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Widgets Feed</span><span class="status-chip"></span></div><div class="tweak-desc">Turns off the taskbar news and Widgets experience to reduce background content activity.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="windows-widgets"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="search-highlights">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Quiet Search Highlights</span><span class="status-chip"></span></div><div class="tweak-desc">Stops changing online content from loading into the Windows Search experience.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="search-highlights"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="transparency">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Reduce Windows Transparency</span><span class="status-chip"></span></div><div class="tweak-desc">Uses solid desktop surfaces to reduce visual effects overhead on lower-powered PCs.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="transparency"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="app-launch-tracking">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable App Launch Tracking</span><span class="status-chip"></span></div><div class="tweak-desc">Stops Windows from recording recently launched apps for Start and Search suggestions.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="app-launch-tracking"><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="tweaks-section">
+          <div class="tweaks-section-label"><i class="fa-solid fa-microchip"></i><span>Advanced FPS & latency</span><small>Registry and system-level controls. Restart after applying before benchmarking.</small></div>
+          <div class="tweaks-grid">
+            <div class="tweak-card" data-tweak="tcp-ack-profile">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">TCP ACK Latency Profile</span><span class="status-chip"></span></div><div class="tweak-desc">Writes low-delay TCP acknowledgement values to active adapters for advanced online-game testing.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="tcp-ack-profile"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="games-priority-profile">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Games Scheduling Priority</span><span class="status-chip"></span></div><div class="tweak-desc">Sets Windows Games multimedia task values to high CPU, GPU, and I/O scheduling priority.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="games-priority-profile"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="high-performance-gpu">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Default High-Performance GPU</span><span class="status-chip"></span></div><div class="tweak-desc">Sets the Windows DirectX global preference to favor the high-performance GPU where supported.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="high-performance-gpu"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="memory-compression">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Memory Compression</span><span class="status-chip"></span></div><div class="tweak-desc">Removes Windows memory-compression CPU work. Best tested only on PCs with ample RAM.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="memory-compression"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="ntfs-last-access">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable NTFS Last-Access Updates</span><span class="status-chip"></span></div><div class="tweak-desc">Reduces background metadata updates when Windows reads files. Advanced storage responsiveness option.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="ntfs-last-access"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="tcp-fast-open">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Enable TCP Fast Open</span><span class="status-chip"></span></div><div class="tweak-desc">Enables Windows TCP Fast Open for compatible game services and servers.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="tcp-fast-open"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="network-adapter-power">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Network Adapter Power Saving</span><span class="status-chip"></span></div><div class="tweak-desc">Keeps active physical network adapters from being powered down by Windows.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="network-adapter-power"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="cpu-minimum-state">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Force CPU Minimum State</span><span class="status-chip"></span></div><div class="tweak-desc">Keeps the CPU at a 100% minimum performance state on the active power plan.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="cpu-minimum-state"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="active-cooling">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Prefer Active Cooling</span><span class="status-chip"></span></div><div class="tweak-desc">Uses fan cooling before CPU throttling to protect sustained performance.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="active-cooling"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="disk-idle-timeout">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Disk Idle Timeout</span><span class="status-chip"></span></div><div class="tweak-desc">Stops the active plan from sleeping disks, avoiding storage wake-up delays.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="disk-idle-timeout"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="game-bar-overlay">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Game Bar Overlay</span><span class="status-chip"></span></div><div class="tweak-desc">Turns off the Windows Game Bar overlay and its capture shortcut layer.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="game-bar-overlay"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="fullscreen-optimizations">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Fullscreen Optimizations</span><span class="status-chip"></span></div><div class="tweak-desc">Sets the Windows GameConfigStore preference used for fullscreen optimization behavior.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="fullscreen-optimizations"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="edge-background">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Edge Background Tasks</span><span class="status-chip"></span></div><div class="tweak-desc">Stops Microsoft Edge startup boost and background preloading through Windows policy values.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="edge-background"><span class="slider"></span></label>
+            </div>
+            <div class="tweak-card" data-tweak="copilot-policy">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Windows Copilot</span><span class="status-chip"></span></div><div class="tweak-desc">Turns off the Windows Copilot policy to reduce the feature’s background entry points.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="copilot-policy"><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NVIDIA GPU -->
+      <section id="tab-nvidia" class="page-tab-content">
+        <div class="page-header">
+          <div><h1 class="page-title">NVIDIA Performance</h1><p class="page-subtitle">A clear high-performance checklist for NVIDIA Control Panel—review each setting before changing it.</p></div>
+          <button class="btn-primary" id="btn-open-nvidia-panel"><i class="fa-solid fa-arrow-up-right-from-square"></i><span>Open NVIDIA Control Panel</span></button>
+        </div>
+
+        <div class="nvidia-hero">
+          <div class="nvidia-mark"><i class="fa-solid fa-microchip"></i></div>
+          <div><span class="scan-kicker">GPU DETECTION</span><h2 id="nvidia-gpu-name">Checking for NVIDIA GPU…</h2><p id="nvidia-gpu-meta">This page reads GPU details only. It does not alter driver settings.</p></div>
+          <div class="nvidia-stats"><span>Temperature <strong id="nvidia-temp">—</strong></span><span>Power limit <strong id="nvidia-power">—</strong></span></div>
+        </div>
+
+        <div class="queue-note"><i class="fa-solid fa-shield-halved"></i><span><strong>Driver settings stay in your hands.</strong> NVIDIA Control Panel settings are shown as a guide because the driver owns them. This app does not silently force a GPU profile.</span></div>
+
+        <div class="nvidia-profile-intro"><div><span class="scan-kicker">NVIDIA PROFILE LIBRARY</span><h2>Choose the way you play.</h2><p>Click a profile to see its recommended NVIDIA Control Panel values. Your selection is saved in this app; NVIDIA stays unchanged until you confirm the settings in its own Control Panel.</p></div><span class="nvidia-profile-badge" id="nvidia-profile-badge">Competitive FPS</span></div>
+        <div class="nvidia-profile-picker" role="list" aria-label="NVIDIA profile choices">
+          <button class="nvidia-profile-card active" type="button" data-nvidia-profile="competitive"><i class="fa-solid fa-crosshairs"></i><span><strong>Competitive FPS</strong><small>Lowest latency, maximum performance</small></span><i class="fa-solid fa-check profile-check"></i></button>
+          <button class="nvidia-profile-card" type="button" data-nvidia-profile="balanced"><i class="fa-solid fa-scale-balanced"></i><span><strong>Balanced</strong><small>Good everyday performance and visuals</small></span><i class="fa-solid fa-check profile-check"></i></button>
+          <button class="nvidia-profile-card" type="button" data-nvidia-profile="quality"><i class="fa-solid fa-wand-magic-sparkles"></i><span><strong>Visual Quality</strong><small>Sharper image quality for single-player games</small></span><i class="fa-solid fa-check profile-check"></i></button>
+        </div>
+
+        <div class="tweaks-section">
+          <div class="tweaks-section-label"><i class="fa-solid fa-bolt"></i><span id="nvidia-profile-heading">Competitive FPS — recommended 3D settings</span><small>Use these as the visible settings to confirm in NVIDIA Control Panel.</small></div>
+          <div class="nvidia-settings-grid">
+            <div class="nvidia-setting"><span>Power management mode</span><strong data-nvidia-value="power">Prefer maximum performance</strong></div>
+            <div class="nvidia-setting"><span>Preferred refresh rate</span><strong data-nvidia-value="refresh">Highest available</strong></div>
+            <div class="nvidia-setting"><span>Texture filtering — Quality</span><strong data-nvidia-value="textureQuality">High performance</strong></div>
+            <div class="nvidia-setting"><span>Texture filtering — Anisotropic</span><strong data-nvidia-value="anisotropic">On</strong></div>
+            <div class="nvidia-setting"><span>Texture filtering — Trilinear</span><strong data-nvidia-value="trilinear">On</strong></div>
+            <div class="nvidia-setting"><span>Low Latency Mode</span><strong data-nvidia-value="latency">On</strong></div>
+            <div class="nvidia-setting"><span>Vertical sync</span><strong data-nvidia-value="vsync">Use the 3D application setting</strong></div>
+            <div class="nvidia-setting"><span>Threaded optimization</span><strong data-nvidia-value="threaded">Auto</strong></div>
+            <div class="nvidia-setting"><span>Triple buffering</span><strong data-nvidia-value="tripleBuffering">Off</strong></div>
+            <div class="nvidia-setting"><span>CUDA — GPUs</span><strong data-nvidia-value="cuda">All</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PERSONALIZE -->
+      <section id="tab-personalize" class="page-tab-content">
+        <div class="page-header"><div><h1 class="page-title">Make Windows Yours</h1><p class="page-subtitle">Small, reversible desktop choices that let each person shape their own Windows workspace.</p></div></div>
+        <div class="personalize-banner"><i class="fa-solid fa-palette"></i><div><strong>Personal changes, clearly explained.</strong><span>Every option below is reversible and enters your review queue before it changes Windows.</span></div></div>
+        <div class="tweaks-section">
+          <div class="tweaks-section-label"><i class="fa-solid fa-table-columns"></i><span>Taskbar layout</span><small>Some options may need a sign-out or Explorer restart to appear.</small></div>
+          <div class="tweaks-grid">
+            <div class="tweak-card" data-tweak="taskbar-alignment"><div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Taskbar Alignment</span><span class="status-chip"></span></div><div class="tweak-desc">Choose whether your Start button and pinned apps sit in the center or on the left.</div></div><select class="select-input tweak-select" data-tweak-id="taskbar-alignment"><option value="center">Centered</option><option value="left">Left aligned</option></select></div>
+            <div class="tweak-card" data-tweak="taskbar-size"><div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Taskbar Icon Size</span><span class="status-chip"></span></div><div class="tweak-desc">Choose a smaller, standard, or larger taskbar appearance where your Windows version supports it.</div></div><select class="select-input tweak-select" data-tweak-id="taskbar-size"><option value="small">Small</option><option value="standard" selected>Standard</option><option value="large">Large</option></select></div>
+            <div class="tweak-card" data-tweak="taskbar-search"><div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Taskbar Search</span><span class="status-chip"></span></div><div class="tweak-desc">Choose whether Windows shows a search box, a compact icon, or no taskbar search control.</div></div><select class="select-input tweak-select" data-tweak-id="taskbar-search"><option value="hidden">Hidden</option><option value="icon" selected>Search icon</option><option value="box">Search box</option></select></div>
+          </div>
+        </div>
+        <div class="tweaks-section">
+          <div class="tweaks-section-label"><i class="fa-solid fa-eye"></i><span>Comfort & appearance</span><small>More options are available under Explorer & Shell.</small></div>
+          <div class="personalize-tip"><i class="fa-solid fa-lightbulb"></i><span><strong>Try a calmer setup:</strong> Windows Dark Mode, reduced transparency, a smaller taskbar, and hidden Widgets can reduce visual noise without affecting your files or apps.</span></div>
+        </div>
+        <div class="tweaks-section">
+          <div class="tweaks-section-label"><i class="fa-solid fa-palette"></i><span>App appearance</span><small>Your choice is saved locally.</small></div>
+          <div class="theme-picker" role="list" aria-label="App theme choices">
+            <button class="theme-card" type="button" data-app-theme="gold"><span class="theme-swatch gold"></span><strong>Gold</strong><small>Batman-inspired charcoal and brass</small></button>
+            <button class="theme-card" type="button" data-app-theme="dark"><span class="theme-swatch dark"></span><strong>Dark</strong><small>Cool, low-light blue</small></button>
+            <button class="theme-card" type="button" data-app-theme="light"><span class="theme-swatch light"></span><strong>Light</strong><small>Bright and easy to read</small></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- HISTORY & UNDO -->
+      <section id="tab-history" class="page-tab-content">
+        <div class="page-header"><div><h1 class="page-title">History & Undo</h1><p class="page-subtitle">A local record of successful changes made through this app. Revert is available only when the original setting is known and reversible.</p></div><button class="btn-secondary" id="btn-clear-history"><i class="fa-solid fa-trash-can"></i><span>Clear history</span></button></div>
+        <div class="history-safety"><i class="fa-solid fa-shield-heart"></i><div><strong>Nothing is hidden.</strong><span>Cleanup tasks are recorded too, but files removed by Windows cleanup cannot be restored from here.</span></div></div>
+        <div class="history-list" id="history-list" aria-live="polite"></div>
+      </section>
+
+      <!-- PRIVACY & SECURITY -->
+      <section id="tab-stealth" class="page-tab-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Privacy & Security</h1>
+            <p class="page-subtitle">Disable background telemetry, Bing web search, and AI snapshots</p>
+          </div>
+        </div>
+
+        <div class="tweaks-section">
+          <div class="tweaks-section-label"><i class="fa-solid fa-user-shield"></i><span>Data & privacy controls</span><small>All changes are reviewed before execution.</small></div>
+          <div class="tweaks-grid">
+            <div class="tweak-card" data-tweak="telemetry">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Disable Windows Telemetry</span>
+                  <span class="status-chip" id="chip-telemetry"></span>
+                </div>
+                <div class="tweak-desc">Blocks diagnostic data tracking submission to Microsoft servers</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="telemetry">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="bing-search">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Disable Bing in Start Menu</span>
+                  <span class="status-chip" id="chip-bing-search"></span>
+                </div>
+                <div class="tweak-desc">Prevents local desktop searches from sending web queries to Bing</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="bing-search">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="recall-ai">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Disable Windows Recall AI</span>
+                  <span class="status-chip" id="chip-recall-ai"></span>
+                </div>
+                <div class="tweak-desc">Blocks background screen activity snapshots and AI telemetry</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="recall-ai">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="ad-id">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Disable Advertising ID</span>
+                  <span class="status-chip" id="chip-ad-id"></span>
+                </div>
+                <div class="tweak-desc">Blocks targeted advertising ID tracking across Windows apps</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="ad-id">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="location-service">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Disable Geolocation Tracking</span>
+                  <span class="status-chip" id="chip-location-service"></span>
+                </div>
+                <div class="tweak-desc">Shuts down background Windows location tracking service</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="location-service">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="windows-tips">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Quiet Windows Suggestions</span><span class="status-chip"></span></div><div class="tweak-desc">Turns off promotional tips and suggestions in the Windows user interface.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="windows-tips"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="background-apps">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Restrict Background Apps</span><span class="status-chip"></span></div><div class="tweak-desc">Stops Store apps from continuing tasks in the background for this Windows user.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="background-apps"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="windows-widgets">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Windows Widgets</span><span class="status-chip"></span></div><div class="tweak-desc">Removes the Windows Widgets and news feed experience from the taskbar.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="windows-widgets"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="search-highlights">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Quiet Search Highlights</span><span class="status-chip"></span></div><div class="tweak-desc">Turns off the changing content and suggestions shown in Windows Search.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="search-highlights"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="app-launch-tracking">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable App Launch Tracking</span><span class="status-chip"></span></div><div class="tweak-desc">Stops Windows from recording recently launched apps for Start and Search suggestions.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="app-launch-tracking"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="windows-spotlight">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Windows Spotlight</span><span class="status-chip"></span></div><div class="tweak-desc">Turns off Spotlight content, suggestions, and promoted lock-screen background material.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="windows-spotlight"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="tailored-experiences">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Tailored Experiences</span><span class="status-chip"></span></div><div class="tweak-desc">Stops personalized Windows experiences that use diagnostic information.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="tailored-experiences"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="activity-history">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Disable Activity History</span><span class="status-chip"></span></div><div class="tweak-desc">Prevents Windows from publishing activity history and Timeline data.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="activity-history"><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: SYSTEM REPAIR -->
+      <section id="tab-repair" class="page-tab-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">System Repair</h1>
+            <p class="page-subtitle">Automated system file verification, DISM repairs, and Winsock resets</p>
+          </div>
+        </div>
+
+        <div class="tweaks-section">
+          <div class="tweaks-grid">
+            <div class="tweak-card">
+              <div class="tweak-info">
+                <div class="tweak-title">Run System File Checker (SFC)</div>
+                <div class="tweak-desc">Scans and repairs corrupted core Windows OS files</div>
+              </div>
+              <button class="btn-secondary" id="btn-run-sfc">
+                <i class="fa-solid fa-stethoscope"></i>
+                <span>Queue SFC Scan</span>
+              </button>
+            </div>
+
+            <div class="tweak-card">
+              <div class="tweak-info">
+                <div class="tweak-title">DISM Component Store Repair</div>
+                <div class="tweak-desc">Restores Windows component store image integrity</div>
+              </div>
+              <button class="btn-secondary" id="btn-run-dism">
+                <i class="fa-solid fa-compact-disc"></i>
+                <span>Queue DISM Repair</span>
+              </button>
+            </div>
+
+            <div class="tweak-card">
+              <div class="tweak-info">
+                <div class="tweak-title">Reset Winsock Network Stack</div>
+                <div class="tweak-desc">Fixes broken TCP/IP network protocol sockets</div>
+              </div>
+              <button class="btn-secondary" id="btn-run-winsock">
+                <i class="fa-solid fa-network-wired"></i>
+                <span>Queue Winsock Reset</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: EXPLORER & SHELL -->
+      <section id="tab-shell" class="page-tab-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Explorer & Shell</h1>
+            <p class="page-subtitle">Customize File Explorer context menus and visibility options</p>
+          </div>
+        </div>
+
+        <div class="tweaks-section">
+          <div class="tweaks-section-label"><i class="fa-regular fa-folder-open"></i><span>File Explorer preferences</span><small>Changes apply to your Windows user profile.</small></div>
+          <div class="tweaks-grid">
+            <div class="tweak-card" data-tweak="classic-context-menu">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Classic Windows 10 Context Menu</span>
+                  <span class="status-chip" id="chip-classic-context-menu"></span>
+                </div>
+                <div class="tweak-desc">Restores full right-click context menu in Windows 11</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="classic-context-menu">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="hidden-files">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Show Hidden Files & Folders</span>
+                  <span class="status-chip" id="chip-hidden-files"></span>
+                </div>
+                <div class="tweak-desc">Toggles visibility of hidden system items in File Explorer</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="hidden-files">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="file-extensions">
+              <div class="tweak-info">
+                <div class="tweak-title-row">
+                  <span class="tweak-title">Show File Extensions</span>
+                  <span class="status-chip" id="chip-file-extensions"></span>
+                </div>
+                <div class="tweak-desc">Displays format suffixes (.exe, .png) in file lists</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="tweak-toggle" data-tweak-id="file-extensions">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="tweak-card" data-tweak="transparency">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Reduce Transparency Effects</span><span class="status-chip"></span></div><div class="tweak-desc">Uses solid surfaces throughout Windows for a clearer, lower-overhead desktop.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="transparency"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="long-paths">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Enable Long File Paths</span><span class="status-chip"></span></div><div class="tweak-desc">Lets compatible tools work with paths longer than the classic 260-character limit.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="long-paths"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="task-view-button">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Hide Task View Button</span><span class="status-chip"></span></div><div class="tweak-desc">Removes the Task View button from the taskbar for a cleaner, simpler layout.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="task-view-button"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="windows-dark-mode">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Use Windows Dark Mode</span><span class="status-chip"></span></div><div class="tweak-desc">Switches Windows and supported apps to the darker color mode. You can switch it back anytime.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="windows-dark-mode"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="taskbar-clock-seconds">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Show Seconds in Taskbar Clock</span><span class="status-chip"></span></div><div class="tweak-desc">Adds seconds to the Windows taskbar clock for a more detailed time display.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="taskbar-clock-seconds"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="explorer-this-pc">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Open Explorer to This PC</span><span class="status-chip"></span></div><div class="tweak-desc">Makes new File Explorer windows open at This PC instead of Quick Access.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="explorer-this-pc"><span class="slider"></span></label>
+            </div>
+
+            <div class="tweak-card" data-tweak="shortcut-prefix">
+              <div class="tweak-info"><div class="tweak-title-row"><span class="tweak-title">Remove Shortcut Name Suffix</span><span class="status-chip"></span></div><div class="tweak-desc">Stops Windows from appending “- Shortcut” when creating new shortcuts.</div></div>
+              <label class="switch"><input type="checkbox" class="tweak-toggle" data-tweak-id="shortcut-prefix"><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 7: DISK CLEANUP -->
+      <section id="tab-debloat" class="page-tab-content">
+        <div class="page-header"><div><h1 class="page-title">Windows Debloat</h1><p class="page-subtitle">Queue removal of optional preinstalled Microsoft apps you do not use.</p></div></div>
+        <div class="queue-note"><i class="fa-solid fa-box-archive"></i><span>Remove optional apps for your Windows account. Removal can erase local app data; reinstall through Microsoft Store. Other accounts and Windows provisioning are left alone.</span></div>
+        <section class="full-debloat-callout" aria-labelledby="full-debloat-title">
+          <div><span class="eyebrow">CURATED OPTIONAL APPS</span><h2 id="full-debloat-title">Full Debloat</h2><p>Queues all seven optional-app groups below. It does not remove Microsoft Store, Edge, drivers, Windows components, or apps for other accounts.</p></div>
+          <button class="btn-primary full-debloat-button" id="btn-queue-full-debloat" type="button"><i class="fa-solid fa-layer-group"></i><span>Queue Full Debloat</span></button>
+        </section>
+        <div class="tweaks-section">
+          <div class="tweaks-section-label"><i class="fa-solid fa-boxes-stacked"></i><span>Optional app groups</span><small>Removed apps can usually be reinstalled from Microsoft Store.</small></div>
+          <div class="tweaks-grid">
+            <div class="tweak-card"><div class="tweak-info"><div class="tweak-title">Remove Consumer Apps</div><div class="tweak-desc">Get Help, Get Started, Office Hub, Solitaire, People, Maps, Feedback Hub, and Bing content apps.</div></div><button class="btn-secondary debloat-action" data-debloat-profile="consumer"><i class="fa-solid fa-minus"></i><span>Add to Queue</span></button></div>
+            <div class="tweak-card"><div class="tweak-info"><div class="tweak-title">Remove Xbox App Group</div><div class="tweak-desc">Xbox overlay, identity, speech overlay, Game Bar, and related Xbox packages.</div></div><button class="btn-secondary debloat-action" data-debloat-profile="xbox"><i class="fa-solid fa-minus"></i><span>Add to Queue</span></button></div>
+            <div class="tweak-card"><div class="tweak-info"><div class="tweak-title">Remove Media & Phone Apps</div><div class="tweak-desc">Legacy Groove Music, Movies & TV, Camera, and Phone Link packages.</div></div><button class="btn-secondary debloat-action" data-debloat-profile="media"><i class="fa-solid fa-minus"></i><span>Add to Queue</span></button></div>
+            <div class="tweak-card"><div class="tweak-info"><div class="tweak-title">Remove 3D & Mixed Reality Apps</div><div class="tweak-desc">3D Viewer, Paint 3D, Mixed Reality Portal, and related preinstalled packages.</div></div><button class="btn-secondary debloat-action" data-debloat-profile="3d"><i class="fa-solid fa-minus"></i><span>Add to Queue</span></button></div>
+            <div class="tweak-card"><div class="tweak-info"><div class="tweak-title">Remove Teams & Communications</div><div class="tweak-desc">Teams, Skype, Outlook for Windows, and Phone Link packages.</div></div><button class="btn-secondary debloat-action" data-debloat-profile="communications"><i class="fa-solid fa-minus"></i><span>Add to Queue</span></button></div>
+            <div class="tweak-card"><div class="tweak-info"><div class="tweak-title">Remove AI & Web Extras</div><div class="tweak-desc">Copilot, Bing search components, and Windows web-experience packages.</div></div><button class="btn-secondary debloat-action" data-debloat-profile="ai-web"><i class="fa-solid fa-minus"></i><span>Add to Queue</span></button></div>
+            <div class="tweak-card"><div class="tweak-info"><div class="tweak-title">Remove Productivity Extras</div><div class="tweak-desc">To Do, Alarms, Voice Recorder, Power Automate, and Dev Home packages.</div></div><button class="btn-secondary debloat-action" data-debloat-profile="productivity"><i class="fa-solid fa-minus"></i><span>Add to Queue</span></button></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-about" class="page-tab-content">
+        <div class="page-header"><div><h1 class="page-title">About batmaniscool</h1><p class="page-subtitle">A local Windows tuning workspace built around review, choice, and reversible controls.</p></div></div>
+        <div class="info-page-grid">
+          <article class="info-page-card"><i class="fa-solid fa-shield-halved"></i><h2>batmaniscool System Utility</h2><p id="app-version">Version loading…</p><p>Changes are queued for review. Nothing runs until you select <strong>Apply Changes</strong>.</p></article>
+          <article class="info-page-card"><i class="fa-solid fa-list-check"></i><h2>What it changes</h2><p>Each control explains its scope before it is queued. When supported, the app captures the original setting so it can be restored.</p></article>
+          <article class="info-page-card"><i class="fa-solid fa-triangle-exclamation"></i><h2>Important</h2><p>Performance results depend on the PC, drivers, game, and network. No tweak guarantees extra FPS, lower ping, or stability.</p></article>
+          <article class="info-page-card update-card"><i class="fa-solid fa-arrows-rotate"></i><h2>App updates</h2><p id="update-status">Checking update configuration…</p><button class="btn-secondary" id="btn-check-updates" type="button" disabled>Check for updates</button></article>
+        </div>
+      </section>
+
+      <section id="tab-support" class="page-tab-content">
+        <div class="page-header"><div><h1 class="page-title">Support</h1><p class="page-subtitle">Useful information to collect before reporting a problem.</p></div></div>
+        <div class="info-page-grid">
+          <article class="info-page-card"><i class="fa-solid fa-clipboard-list"></i><h2>Before you apply</h2><p>Review the pending list, close games and apps affected by the setting, and create a restore point if you are changing advanced controls.</p></article>
+          <article class="info-page-card"><i class="fa-solid fa-clock-rotate-left"></i><h2>Undo a change</h2><p>Open <strong>History &amp; Undo</strong> and use Revert for a completed item. For queued items, use Reset before you apply.</p></article>
+          <article class="info-page-card"><i class="fa-solid fa-bug"></i><h2>Report a problem</h2><p>Include the app version, Windows version, the exact control used, and the System Execution Log result. Never share passwords or private account data.</p></article>
+        </div>
+      </section>
+
+      <section id="tab-privacy" class="page-tab-content">
+        <div class="page-header"><div><h1 class="page-title">Privacy</h1><p class="page-subtitle">Clear boundaries for what this desktop app does and does not do.</p></div></div>
+        <div class="info-page-grid">
+          <article class="info-page-card"><i class="fa-solid fa-hard-drive"></i><h2>Local by design</h2><p>Login names, preferences, pending items, and change history stay in the local app profile. This app has no analytics or cloud account service.</p></article>
+          <article class="info-page-card"><i class="fa-solid fa-lock"></i><h2>Account note</h2><p>The app login is a local convenience feature, not a replacement for a Windows account password or full security boundary.</p></article>
+          <article class="info-page-card"><i class="fa-solid fa-wifi"></i><h2>Network behavior</h2><p>The current app does not send tuning data to a server. A future optional update checker would contact only the chosen release server after it is configured.</p></article>
+        </div>
+      </section>
+
+      <section id="tab-maintenance" class="page-tab-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Disk Cleanup</h1>
+            <p class="page-subtitle">Reclaim disk space by purging temporary caches, update logs, and hibernation</p>
+          </div>
+        </div>
+
+        <div class="tweaks-section">
+          <div class="tweaks-section-label"><i class="fa-solid fa-broom"></i><span>Cleanup actions</span><small>Actions are queued; nothing is deleted until you apply changes.</small></div>
+          <div class="tweaks-grid">
+            <div class="tweak-card">
+              <div class="tweak-info">
+                <div class="tweak-title">Clean Temporary Files</div>
+                <div class="tweak-desc">Deletes residual application and OS temporary files</div>
+              </div>
+              <button class="btn-secondary" id="btn-clean-temp">
+                <i class="fa-solid fa-trash-can"></i>
+                <span>Queue Temp Cleanup</span>
+              </button>
+            </div>
+
+            <div class="tweak-card">
+              <div class="tweak-info">
+                <div class="tweak-title">Clean Prefetch Cache</div>
+                <div class="tweak-desc">Queues removal of cached application launch data. Windows will recreate it as needed.</div>
+              </div>
+              <button class="btn-secondary" id="btn-clean-prefetch"><i class="fa-solid fa-bolt"></i><span>Queue Prefetch Cleanup</span></button>
+            </div>
+
+            <div class="tweak-card">
+              <div class="tweak-info">
+                <div class="tweak-title">Clear Windows Event Logs</div>
+                <div class="tweak-desc">Queues a clear of system event logs. Use only after saving any logs you need.</div>
+              </div>
+              <button class="btn-secondary" id="btn-clean-event-logs"><i class="fa-solid fa-clipboard-list"></i><span>Queue Event Log Clear</span></button>
+            </div>
+
+            <div class="tweak-card">
+              <div class="tweak-info">
+                <div class="tweak-title">Clean Windows Update Cache</div>
+                <div class="tweak-desc">Clears leftover setup files in SoftwareDistribution\Download</div>
+              </div>
+              <button class="btn-secondary" id="btn-clean-update-cache">
+                <i class="fa-solid fa-cloud-arrow-down"></i>
+                <span>Queue Cache Cleanup</span>
+              </button>
+            </div>
+
+            <div class="tweak-card">
+              <div class="tweak-info">
+                <div class="tweak-title">Disable Hibernation (hiberfil.sys)</div>
+                <div class="tweak-desc">Removes hiberfil.sys to reclaim ~8-32 GB of SSD disk space</div>
+              </div>
+              <button class="btn-secondary" id="btn-disable-hibernation">
+                <i class="fa-solid fa-power-off"></i>
+                <span>Queue Hibernation Change</span>
+              </button>
+            </div>
+
+            <div class="tweak-card">
+              <div class="tweak-info">
+                <div class="tweak-title">Empty Windows Recycle Bin</div>
+                <div class="tweak-desc">Permanently clears items currently held in the Recycle Bin</div>
+              </div>
+              <button class="btn-secondary" id="btn-empty-recycle">
+                <i class="fa-solid fa-box-archive"></i>
+                <span>Queue Bin Cleanup</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Console Log Drawer -->
+      <div class="log-drawer">
+        <div class="log-header">
+          <div class="log-title">
+            <i class="fa-solid fa-terminal" style="color: var(--accent-amber);"></i>
+            <span>System Execution Log</span>
+          </div>
+          <span style="font-size: 11px; color: var(--text-dim);" id="log-count">0 logged</span>
+        </div>
+        <div class="log-body" id="log-container">
+          <div class="log-entry">
+            <span class="log-time">[Init]</span>
+            <span class="log-tag success">READY</span>
+            <span>batmaniscool System Utility online. Ready for commands.</span>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="toast-container" id="toast-area"></div>
+
+  <div class="welcome-overlay" id="first-run-welcome" hidden aria-modal="true" role="dialog" aria-labelledby="welcome-title">
+    <section class="welcome-card">
+      <span class="eyebrow">FIRST RUN / BATMANISCOOL</span>
+      <h1 id="welcome-title">Your PC. Your call.</h1>
+      <p>Start by reviewing controls, not applying them. Every tweak stays in your queue until you explicitly apply it.</p>
+      <div class="welcome-steps"><span><i class="fa-solid fa-magnifying-glass"></i> Explore a category</span><span><i class="fa-solid fa-list-check"></i> Review your queue</span><span><i class="fa-solid fa-shield-halved"></i> Restore where available</span></div>
+      <div class="welcome-actions"><button class="btn-secondary" id="btn-welcome-performance" type="button">Explore performance</button><button class="btn-primary" id="btn-complete-welcome" type="button">Open Control Center</button></div>
+    </section>
+  </div>
+
+  <div class="results-overlay" id="apply-results-overlay" hidden aria-modal="true" role="dialog" aria-labelledby="apply-results-title">
+    <section class="results-card">
+      <div class="results-header"><div><span class="eyebrow">SESSION COMPLETE</span><h1 id="apply-results-title">Apply results</h1><p id="apply-results-summary">Review what happened before you continue.</p></div><button class="drawer-close" id="btn-close-results" type="button" aria-label="Close results"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="results-list" id="apply-results-list"></div>
+      <div class="results-restart" id="apply-results-restart" hidden><i class="fa-solid fa-rotate"></i><span>Some changes may need a sign-out, app restart, or Windows restart before you notice them.</span></div>
+      <div class="results-actions"><button class="btn-secondary" id="btn-undo-session" type="button"><i class="fa-solid fa-arrow-rotate-left"></i><span>Queue Undo Session</span></button><button class="btn-primary" id="btn-close-results-primary" type="button">Continue</button></div>
+    </section>
+  </div>
+
+  <div class="drawer-scrim" id="info-drawer-scrim"></div>
+  <aside class="info-drawer" id="info-drawer" aria-hidden="true" aria-label="Tweak details">
+    <div class="drawer-header"><div><span class="drawer-kicker">TWEAK DETAILS</span><h2 id="drawer-title">What this does</h2></div><button class="drawer-close" id="btn-close-drawer" aria-label="Close details"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="drawer-tabs"><button class="drawer-tab active" data-drawer-tab="details">What this does</button><button class="drawer-tab" data-drawer-tab="changes">Changelog</button></div>
+    <div class="drawer-panel active" id="drawer-details-panel"><p id="drawer-description"></p><div class="drawer-note"><i class="fa-solid fa-circle-info"></i><span id="drawer-note-text">This only adds the tweak to your review queue.</span></div><button class="btn-primary" id="btn-queue-drawer-tweak"><i class="fa-solid fa-plus"></i><span>Add to review queue</span></button></div>
+    <div class="drawer-panel" id="drawer-changes-panel"><div class="changelog-entry"><span>v4.2</span><p>Added local PC scanning, relevant recommendations, and this transparency drawer.</p></div><div class="changelog-entry"><span>v4.1</span><p>Added a queued-only safety workflow and expanded privacy, performance, and Explorer controls.</p></div><div class="changelog-entry"><span>v4.0</span><p>Introduced the batmaniscool desktop utility experience.</p></div></div>
+  </aside>
+
+  <script src="tweak-catalog.js"></script>
+  <script src="power-options.js"></script>
+  <script src="catalog-ui.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

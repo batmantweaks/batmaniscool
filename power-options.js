@@ -1,0 +1,15 @@
+(function(root) {
+  const cpu = '54533251-82be-4824-96c1-47b60b740d00';
+  const make = (id,title,description,subgroup,setting,options,legacy) => ({id,title,description,subgroup,setting,options,legacy});
+  const options = [
+    make('power-epp','CPU performance preference','Choose how supported processors balance speed and energy use. Performance can increase heat and fan noise.',cpu,'36687f9e-e3a5-4dbf-b1dc-15eb381c6863',[[0,'Performance'],[50,'Balanced'],[100,'Energy saving']]),
+    make('power-boost','CPU boost policy','Controls boost above the nominal CPU speed. Aggressive behavior depends on the processor; watch temperatures.',cpu,'be337238-0d82-4146-a960-4f3749d470c7',[[0,'Disabled'],[1,'Enabled'],[2,'Aggressive']], 'processor-boost'),
+    make('power-max','Maximum CPU state','Set the allowed maximum processor state. Lower caps can reduce heat but also lower game performance.',cpu,'bc5038f7-23e0-4960-96da-33abaf5935ec',[[100,'100% — full range'],[90,'90% cap'],[75,'75% cap']]),
+    make('power-min','Minimum CPU state','A higher minimum can increase idle power use. It is not a fixed clock speed and does not guarantee better FPS.',cpu,'893dee8e-2bef-41e0-89c6-b55d0929964c',[[5,'5% — flexible'],[50,'50% minimum'],[100,'100% minimum']], 'cpu-minimum-state'),
+    make('power-cooling','Cooling preference','Active cooling raises fan speed before reducing processor performance. Firmware may manage cooling independently.',cpu,'94d3a615-a899-4ac5-ae2b-e4d8f634367f',[[1,'Active — fans first'],[0,'Passive — reduce power']], 'active-cooling'),
+    make('power-pcie','PCIe link power saving','Choose a PCIe link power policy. Turning power saving off may increase power consumption.', '501a4d13-42af-4429-9fd1-a8218c268e20','ee12f906-d277-404b-b6da-e5fa1a576df5',[[0,'Off'],[1,'Moderate'],[2,'Maximum saving']], 'pcie-link-state'),
+    make('power-wifi','Wireless power policy','Performance favors adapter responsiveness while plugged in. Effect depends on Wi-Fi hardware; it cannot change the route to a game server.','19cbb8fa-5279-450e-9fac-8a3d5fedd0c1','12bbebe6-58d6-4636-95bb-3217ef867c1a',[[0,'Maximum performance'],[1,'Low saving'],[2,'Medium saving'],[3,'Maximum saving']]),
+    make('power-disk','Disk idle timeout','Controls when idle disks power down, in minutes. Keeping a hard drive awake avoids spin-up waits but consumes power.','0012ee47-9041-4b5d-9b77-535fba8b1442','6738e2c4-e8a5-4a42-b16a-e040e769756e',[[0,'Never'],[600,'10 minutes'],[1200,'20 minutes']], 'disk-idle-timeout')
+  ];
+  if(typeof module !== 'undefined') module.exports=options; else root.powerOptions=options;
+})(typeof window==='undefined'?globalThis:window);
