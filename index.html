@@ -148,6 +148,10 @@
             <i class="fa-solid fa-crosshairs"></i>
             <span>Live Monitor</span>
           </div>
+          <div class="nav-item" data-tab="tab-tools">
+            <i class="fa-solid fa-toolbox"></i>
+            <span>Tools &amp; Diagnostics</span>
+          </div>
         </nav>
       </div>
 
@@ -197,6 +201,7 @@
         <div class="nav-section-title">App</div>
         <nav class="nav-menu">
           <div class="nav-item" data-tab="tab-about"><i class="fa-solid fa-circle-info"></i><span>About</span></div>
+          <div class="nav-item" data-tab="tab-release"><i class="fa-solid fa-box-open"></i><span>Release Center</span></div>
           <div class="nav-item" data-tab="tab-support"><i class="fa-solid fa-life-ring"></i><span>Support</span></div>
           <div class="nav-item" data-tab="tab-privacy"><i class="fa-solid fa-shield-halved"></i><span>Privacy</span></div>
           <div class="nav-item" data-tab="tab-settings"><i class="fa-solid fa-gear"></i><span>Settings</span></div>
@@ -456,6 +461,16 @@
       </section>
 
       <!-- PERFORMANCE -->
+      <section id="tab-tools" class="page-tab-content">
+        <div class="page-header"><div><h1 class="page-title">Tools &amp; Diagnostics</h1><p class="page-subtitle">Useful local checks for startup apps, display drivers, and your network connection.</p></div></div>
+        <div class="tools-disclaimer"><i class="fa-solid fa-shield-heart"></i><span><strong>Read-only checks.</strong> These tools inspect your PC and do not change Windows, your drivers, or network configuration.</span></div>
+        <div class="diagnostic-grid">
+          <article class="diagnostic-card"><div class="diagnostic-card-head"><span class="diagnostic-icon"><i class="fa-solid fa-rocket"></i></span><div><h2>Startup Manager</h2><p>See programs registered to start with Windows.</p></div></div><div class="diagnostic-list" id="startup-list"><span class="diagnostic-empty">Open this page to check startup apps.</span></div><div class="diagnostic-actions"><button class="btn-secondary" id="btn-refresh-startup" type="button">Refresh list</button><button class="btn-quiet" id="btn-open-startup-settings" type="button">Manage in Windows <i class="fa-solid fa-arrow-up-right-from-square"></i></button></div></article>
+          <article class="diagnostic-card"><div class="diagnostic-card-head"><span class="diagnostic-icon cyan"><i class="fa-solid fa-microchip"></i></span><div><h2>Driver Checker</h2><p>Read the installed display-driver versions.</p></div></div><div class="diagnostic-list" id="driver-list"><span class="diagnostic-empty">Check installed display drivers.</span></div><div class="diagnostic-actions"><button class="btn-secondary" id="btn-check-drivers" type="button">Check drivers</button></div></article>
+          <article class="diagnostic-card"><div class="diagnostic-card-head"><span class="diagnostic-icon purple"><i class="fa-solid fa-wifi"></i></span><div><h2>Network Test</h2><p>Measure a short local connection test to Cloudflare DNS.</p></div></div><div class="network-results" id="network-results"><span class="diagnostic-empty">Run a test to see adapter, ping, jitter, and packet loss.</span></div><div class="diagnostic-actions"><button class="btn-secondary" id="btn-run-network-test" type="button">Run network test</button></div><p class="diagnostic-footnote">Game-server ping can differ, and some networks block ICMP tests.</p></article>
+        </div>
+      </section>
+
       <section id="tab-performance" class="page-tab-content">
         <div class="page-header">
           <div>
@@ -469,6 +484,11 @@
           <button class="tuning-profile" type="button" data-tuning-profile="balanced"><i class="fa-solid fa-scale-balanced"></i><span><strong>Balanced Gaming</strong><small>Flexible CPU speeds with lighter gaming settings.</small></span><b>Queue profile</b></button>
           <button class="tuning-profile low-impact" type="button" data-tuning-profile="low"><i class="fa-solid fa-leaf"></i><span><strong>Low-Impact Tune</strong><small>Background cleanup with modest system changes</small></span><b>Queue profile</b></button>
         </div>
+        <section class="custom-profile-panel" aria-labelledby="custom-profile-title">
+          <div><span class="eyebrow">YOUR TUNING LIBRARY</span><h2 id="custom-profile-title">Custom profiles</h2><p>Save the items already in your review queue as a named local profile. Loading one only fills the queue—it never changes Windows by itself.</p></div>
+          <div class="custom-profile-create"><input id="custom-profile-name" maxlength="32" placeholder="Example: Fortnite night setup" aria-label="Custom profile name"><button class="btn-secondary" id="btn-save-custom-profile" type="button"><i class="fa-solid fa-bookmark"></i> Save queued profile</button></div>
+          <div class="custom-profile-list" id="custom-profile-list" aria-live="polite"></div>
+        </section>
 
         <div class="tweaks-section">
           <div class="tweaks-section-label"><i class="fa-solid fa-gamepad"></i><span>Gaming & graphics</span><small>Restart may be required for some changes.</small></div>
@@ -1115,6 +1135,12 @@
           <article class="info-page-card"><i class="fa-solid fa-triangle-exclamation"></i><h2>Important</h2><p>Performance results depend on the PC, drivers, game, and network. No tweak guarantees extra FPS, lower ping, or stability.</p></article>
           <article class="info-page-card update-card"><i class="fa-solid fa-arrows-rotate"></i><h2>App updates</h2><p id="update-status">Checking update configuration…</p><button class="btn-secondary" id="btn-check-updates" type="button" disabled>Check for updates</button></article>
         </div>
+      </section>
+
+      <section id="tab-release" class="page-tab-content">
+        <div class="page-header"><div><h1 class="page-title">Release Center</h1><p class="page-subtitle">Everything a future download needs to feel clear, trustworthy, and easy to verify.</p></div><a class="btn-primary" href="https://github.com/batmantweaks/batmaniscool/releases" target="_blank" rel="noopener"><i class="fa-solid fa-download"></i><span>View downloads</span></a></div>
+        <section class="release-hero"><span class="eyebrow">NEXT PRIVATE BUILD</span><h2>Tools that explain themselves.</h2><p>This build adds a startup view, display-driver details, a network check, and your own saved tuning profiles. Every tuning action is still reviewed in the queue before it can run.</p><div class="release-badges"><span><i class="fa-solid fa-shield-halved"></i> Queue-first changes</span><span><i class="fa-solid fa-desktop"></i> Windows desktop app</span><span><i class="fa-solid fa-lock"></i> Local profiles</span></div></section>
+        <div class="release-grid"><article><i class="fa-solid fa-list-check"></i><h2>Before publishing</h2><p>Build the installer, sign it with your certificate, test the install on a clean PC, then upload the installer and update metadata together.</p></article><article><i class="fa-solid fa-arrows-rotate"></i><h2>Automatic updates</h2><p>Once the signed GitHub release feed is live, installed users can check, download, and restart into a verified newer build.</p></article><article><i class="fa-solid fa-circle-info"></i><h2>What users should know</h2><p>No setting promises more FPS or lower ping. The app shows what each option does and waits for the user to approve it.</p></article></div>
       </section>
 
       <section id="tab-support" class="page-tab-content">

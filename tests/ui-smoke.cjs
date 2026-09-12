@@ -24,6 +24,13 @@ app.whenReady().then(async () => {
     await run("document.querySelector('[data-tab=\"tab-performance\"]').click(); document.querySelector('[data-tuning-profile=\"extreme\"]').click(); document.querySelector('[data-tuning-profile=\"low\"]').click()");
     assert(await run("document.getElementById('pending-count-label').textContent === '9' && document.querySelector('[data-tweak-id=\"power-min\"]').value === ''"), 'lower profile replaces extreme queue and dropdowns');
     assert(await run('window.testHarness.calls().length === 0'), 'profile selection never executes tweaks');
+    await run("document.getElementById('custom-profile-name').value='Test setup'; document.getElementById('btn-save-custom-profile').click(); document.getElementById('btn-reset-pending').click(); document.querySelector('#custom-profile-list .btn-secondary').click()");
+    assert(await run("document.querySelector('#custom-profile-list strong').textContent==='Test setup' && Number(document.getElementById('pending-count-label').textContent)>0 && window.testHarness.calls().length===0"), 'custom profiles save locally and only load to queue');
+    await run("document.getElementById('btn-reset-pending').click(); document.querySelector('[data-tab=\"tab-tools\"]').click()");
+    await new Promise(resolve => setTimeout(resolve,150));
+    assert(await run("document.querySelectorAll('#startup-list .diagnostic-row').length===1 && document.querySelectorAll('#driver-list .diagnostic-row').length===1 && window.testHarness.calls().length===0"), 'diagnostic checks are read-only');
+    await run("document.getElementById('btn-run-network-test').click()"); await new Promise(resolve => setTimeout(resolve,100));
+    assert(await run("document.querySelectorAll('#network-results .diagnostic-row').length===2"), 'network test displays adapter and latency results');
     await run("document.getElementById('btn-reset-pending').click(); const select=document.querySelector('[data-tweak-id=\"power-epp\"]'); select.value='100'; select.dispatchEvent(new Event('change')); document.querySelector('[data-tuning-profile=\"extreme\"]').click(); document.querySelector('[data-tuning-profile=\"low\"]').click()");
     assert(await run("document.querySelector('[data-tweak-id=\"power-epp\"]').value==='100' && document.getElementById('pending-count-label').textContent==='10'"), 'profile switching preserves prior manual dropdown selection');
     await run("document.getElementById('btn-reset-pending').click(); document.querySelector('[data-power-id=\"power-epp\"]').click(); document.querySelector('#tab-performance .queued-filter').click()");

@@ -125,7 +125,7 @@ const TweaksEngine = {
   },
 
   async getStartupApps() {
-    const cmd = `Get-ItemProperty HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run, HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run | Select-Object PSChildName, PSPath | ConvertTo-Json`;
+    const cmd = `$paths=@('HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run','HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'); $items=foreach($p in $paths){if(Test-Path $p){$source=if($p -like 'HKCU*'){'Current user'}else{'All users'}; $props=Get-ItemProperty -Path $p; $props.PSObject.Properties | Where-Object {$_.Name -notmatch '^PS'} | ForEach-Object {[pscustomobject]@{Name=$_.Name; Command=[string]$_.Value; Scope=$source}}}}; @($items) | ConvertTo-Json`;
     const res = await runPowerShell(cmd);
     if (res.success && res.output) {
       try {
@@ -133,11 +133,24 @@ const TweaksEngine = {
         return Array.isArray(parsed) ? parsed : [parsed];
       } catch (e) {}
     }
-    return [
-      { Name: 'OneDrive', Path: 'C:\\Program Files\\Microsoft OneDrive\\OneDrive.exe' },
-      { Name: 'Discord', Path: 'C:\\Users\\AppData\\Local\\Discord\\Update.exe' },
-      { Name: 'Spotify', Path: 'C:\\Users\\AppData\\Roaming\\Spotify\\Spotify.exe' }
-    ];
+    return [];
+  },
+
+  // These diagnostics never modify drivers, adapters, or network settings.
+  async getDriverStatus() {
+    const cmd = `Get-CimInstance Win32_PnPSignedDriver | Where-Object {$_.DeviceClass -eq 'DISPLAY'} | Select-Object DeviceName,DriverVersion,DriverDate,Manufacturer,InfName | ConvertTo-Json`;
+    const res = await runPowerShell(cmd);
+    if (res.success && res.output) {
+      try { const parsed = JSON.parse(res.output); return Array.isArray(parsed) ? parsed : [parsed]; } catch (e) {}
+    }
+    return [];
+  },
+
+  async getNetworkDiagnostics() {
+    const cmd = `$adapter=Get-NetAdapter -Physical | Where-Object Status -eq 'Up' | Sort-Object LinkSpeed -Descending | Select-Object -First 1 Name,InterfaceDescription,LinkSpeed; $gateway=Get-NetRoute -DestinationPrefix '0.0.0.0/0' | Sort-Object RouteMetric | Select-Object -First 1 -ExpandProperty NextHop; $samples=@(Test-Connection -ComputerName 1.1.1.1 -Count 4 | Select-Object -ExpandProperty ResponseTime); $average=if($samples.Count){[math]::Round(($samples|Measure-Object -Average).Average)}else{$null}; $jitter=if($samples.Count -gt 1){[math]::Round((1..($samples.Count-1)|ForEach-Object {[math]::Abs($samples[$_]-$samples[$_-1])}|Measure-Object -Average).Average)}else{$null}; [pscustomobject]@{Adapter=$adapter.Name;LinkSpeed=$adapter.LinkSpeed;Gateway=$gateway;Samples=$samples;AverageMs=$average;JitterMs=$jitter;PacketLoss=(4-$samples.Count)*25} | ConvertTo-Json`;
+    const res = await runPowerShell(cmd);
+    if (res.success && res.output) { try { return JSON.parse(res.output); } catch (e) {} }
+    return { Adapter: null, LinkSpeed: null, Gateway: null, Samples: [], AverageMs: null, JitterMs: null, PacketLoss: null };
   },
 
   // === GAMING & PERFORMANCE TWEAKS ===

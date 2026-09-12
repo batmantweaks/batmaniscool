@@ -715,6 +715,7 @@ document.addEventListener('DOMContentLoaded', () => {
     navItems.forEach(n => n.classList.toggle('active', n.getAttribute('data-tab') === targetTabId));
     tabContents.forEach(c => c.classList.toggle('active', c.id === targetTabId));
     if (targetTabId === 'tab-gadgets') { fetchPingData(); fetchProcessData(); }
+    if (targetTabId === 'tab-tools') { fetchStartupApps(); fetchDriverStatus(); }
     if (targetTabId === 'tab-nvidia') fetchNvidiaInfo();
     if (targetTabId === 'tab-history') renderHistory();
   }
@@ -863,6 +864,48 @@ document.addEventListener('DOMContentLoaded', () => {
     playAudioTone('click');
     const result = await window.electronAPI?.openNvidiaControlPanel?.();
     showToast(result?.details || 'NVIDIA Control Panel could not be opened.', result?.success ? 'success' : 'warning');
+  });
+
+  function makeDiagnosticRow(title, detail, badge) {
+    const row = document.createElement('div'); row.className = 'diagnostic-row';
+    const copy = document.createElement('div'); const strong = document.createElement('strong'); strong.textContent = title;
+    const small = document.createElement('small'); small.textContent = detail || 'No additional details available.';
+    copy.append(strong, small); row.append(copy);
+    if (badge) { const chip = document.createElement('span'); chip.className = 'diagnostic-badge'; chip.textContent = badge; row.append(chip); }
+    return row;
+  }
+  async function fetchStartupApps() {
+    const list = document.getElementById('startup-list'); if (!list || !window.electronAPI?.getStartupApps) return;
+    list.replaceChildren(); list.append(makeDiagnosticRow('Checking startup registrations…', 'This check is read-only.'));
+    try {
+      const apps = await window.electronAPI.getStartupApps(); list.replaceChildren();
+      if (!apps?.length) list.append(makeDiagnosticRow('No startup registrations found', 'Windows may manage startup items through another location.'));
+      else apps.slice(0, 12).forEach(app => list.append(makeDiagnosticRow(app.Name || app.name || 'Startup app', app.Command || app.Path || app.command || 'Registered startup command', app.Scope || 'Startup')));
+    } catch (error) { list.replaceChildren(makeDiagnosticRow('Startup check unavailable', 'Try Refresh list again.')); }
+  }
+  async function fetchDriverStatus() {
+    const list = document.getElementById('driver-list'); if (!list || !window.electronAPI?.getDriverStatus) return;
+    list.replaceChildren(); list.append(makeDiagnosticRow('Checking display drivers…', 'This check does not install or update drivers.'));
+    try {
+      const drivers = await window.electronAPI.getDriverStatus(); list.replaceChildren();
+      if (!drivers?.length) list.append(makeDiagnosticRow('No display driver information found', 'Use Windows Update or your GPU maker for driver updates.'));
+      else drivers.forEach(driver => list.append(makeDiagnosticRow(driver.DeviceName || 'Display adapter', `${driver.Manufacturer || 'Driver'} · version ${driver.DriverVersion || 'unknown'}`, driver.DriverDate ? String(driver.DriverDate).slice(0, 10) : 'Installed')));
+    } catch (error) { list.replaceChildren(makeDiagnosticRow('Driver check unavailable', 'Try Check drivers again.')); }
+  }
+  async function runNetworkTest() {
+    const results = document.getElementById('network-results'); if (!results || !window.electronAPI?.getNetworkDiagnostics) return;
+    results.replaceChildren(makeDiagnosticRow('Running short network test…', 'Testing Cloudflare DNS; no network settings are changed.'));
+    try {
+      const info = await window.electronAPI.getNetworkDiagnostics(); results.replaceChildren();
+      results.append(makeDiagnosticRow(info.Adapter || 'Network adapter unavailable', `${info.LinkSpeed || 'Link speed unavailable'} · gateway ${info.Gateway || 'not found'}`, 'Adapter'));
+      results.append(makeDiagnosticRow(info.AverageMs == null ? 'Ping unavailable' : `${info.AverageMs} ms average ping`, info.JitterMs == null ? 'ICMP may be blocked by this network.' : `${info.JitterMs} ms jitter · ${info.PacketLoss || 0}% packet loss`, 'Cloudflare'));
+    } catch (error) { results.replaceChildren(makeDiagnosticRow('Network test unavailable', 'Try again after checking your connection.')); }
+  }
+  document.getElementById('btn-refresh-startup')?.addEventListener('click', () => { playAudioTone('click'); fetchStartupApps(); });
+  document.getElementById('btn-check-drivers')?.addEventListener('click', () => { playAudioTone('click'); fetchDriverStatus(); });
+  document.getElementById('btn-run-network-test')?.addEventListener('click', () => { playAudioTone('click'); runNetworkTest(); });
+  document.getElementById('btn-open-startup-settings')?.addEventListener('click', async () => {
+    const result = await window.electronAPI?.openStartupSettings?.(); showToast(result?.details || 'Windows Startup Apps settings could not be opened.', result?.success ? 'success' : 'warning');
   });
 
   async function scanSystem() {
@@ -1132,6 +1175,29 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast(`${button.querySelector('strong')?.textContent || 'Tuning'} profile added to review. Nothing has been applied.`, 'info');
     });
   });
+
+  const customProfilesKey = 'batmaniscool_custom_profiles';
+  function getCustomProfiles() { try { const value = JSON.parse(localStorage.getItem(customProfilesKey) || '[]'); return Array.isArray(value) ? value : []; } catch (e) { return []; } }
+  function saveCustomProfiles(profiles) { localStorage.setItem(customProfilesKey, JSON.stringify(profiles)); }
+  function renderCustomProfiles() {
+    const list = document.getElementById('custom-profile-list'); if (!list) return;
+    list.replaceChildren(); const profiles = getCustomProfiles();
+    if (!profiles.length) { const empty = document.createElement('span'); empty.className = 'custom-profile-empty'; empty.textContent = 'No saved profiles yet. Queue a few controls, name the setup, and save it here.'; list.append(empty); return; }
+    profiles.forEach(profile => {
+      const row = document.createElement('div'); row.className = 'custom-profile-row';
+      const copy = document.createElement('span'); const strong = document.createElement('strong'); strong.textContent = profile.name; const small = document.createElement('small'); small.textContent = `${Object.keys(profile.pending || {}).length} queued controls · saved locally`; copy.append(strong, small);
+      const load = document.createElement('button'); load.className = 'btn-secondary'; load.type = 'button'; load.textContent = 'Load to queue'; load.addEventListener('click', () => { queueImportedPlan({ pending: profile.pending }); showToast(`${profile.name} loaded to review. Nothing has been applied.`, 'info'); });
+      const remove = document.createElement('button'); remove.className = 'btn-icon'; remove.type = 'button'; remove.title = `Delete ${profile.name}`; remove.innerHTML = '<i class="fa-solid fa-trash-can"></i>'; remove.addEventListener('click', () => { saveCustomProfiles(getCustomProfiles().filter(item => item.id !== profile.id)); renderCustomProfiles(); showToast('Custom profile deleted.', 'info'); });
+      row.append(copy, load, remove); list.append(row);
+    });
+  }
+  document.getElementById('btn-save-custom-profile')?.addEventListener('click', () => {
+    const field = document.getElementById('custom-profile-name'); const name = field?.value.trim(); const pending = Object.fromEntries(Object.entries(pendingTweaks).map(([id, value]) => [id, {...value}]));
+    if (!name) { showToast('Name your custom profile first.', 'warning'); return; }
+    if (!Object.keys(pending).length) { showToast('Queue controls first, then save the profile.', 'warning'); return; }
+    const profiles = getCustomProfiles(); profiles.unshift({ id: `${Date.now()}-${Math.random().toString(16).slice(2)}`, name: name.slice(0, 32), pending, createdAt: new Date().toISOString() }); saveCustomProfiles(profiles.slice(0, 12)); if (field) field.value = ''; renderCustomProfiles(); showToast(`${name} saved locally.`, 'success');
+  });
+  renderCustomProfiles();
 
   // Live Console Logs
   let logItemCount = 1;

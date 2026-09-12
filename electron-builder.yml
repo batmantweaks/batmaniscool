@@ -1,7 +1,7 @@
 appId: com.batmaniscool.utility
 productName: batmaniscool
 directories:
-  output: dist/installer-v4.5
+  output: dist/installer-v4.7
 files:
   - "**/*"
   - "!dist/**"

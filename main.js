@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const { execFile } = require('child_process');
 const path = require('path');
 const fs = require('fs');
@@ -127,6 +127,12 @@ ipcMain.handle('get-top-processes', async () => {
 
 ipcMain.handle('get-startup-apps', async () => {
   return await TweaksEngine.getStartupApps();
+});
+ipcMain.handle('get-driver-status', async () => TweaksEngine.getDriverStatus());
+ipcMain.handle('get-network-diagnostics', async () => TweaksEngine.getNetworkDiagnostics());
+ipcMain.handle('open-startup-settings', async () => {
+  try { await shell.openExternal('ms-settings:startupapps'); return { success: true, details: 'Opened Windows Startup Apps settings.' }; }
+  catch (error) { return { success: false, details: 'Windows Startup Apps settings could not be opened.' }; }
 });
 
 ipcMain.handle('kill-process', async (event, pid) => {
