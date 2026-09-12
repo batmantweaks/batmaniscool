@@ -1030,6 +1030,64 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.querySelectorAll('.catalog-action').forEach(button => button.addEventListener('click', () => stageTweak(button.dataset.action)));
 
+  // Local plan portability. Import is intentionally allowlisted and only stages
+  // values; it never calls the desktop bridge.
+  function availablePlanIds() {
+    return new Set([
+      ...[...document.querySelectorAll('[data-tweak-id]')].map(control => control.dataset.tweakId),
+      ...[...document.querySelectorAll('[data-debloat-profile]')].map(button => `debloat-${button.dataset.debloatProfile}`),
+      ...Object.values(queuedActions),
+      ...window.powerOptions.map(item => item.id),
+    ]);
+  }
+  function queueImportedPlan(plan) {
+    if (!plan || typeof plan !== 'object' || !plan.pending || typeof plan.pending !== 'object') throw new Error('This is not a batmaniscool review plan.');
+    const allowed = availablePlanIds(); let count = 0;
+    for (const [id, payload] of Object.entries(plan.pending)) {
+      if (!allowed.has(id) || !payload || typeof payload !== 'object' || Array.isArray(payload)) continue;
+      const safe = {};
+      if (typeof payload.enabled === 'boolean') safe.enabled = payload.enabled;
+      if (typeof payload.value === 'string' && payload.value.length <= 80) safe.value = payload.value;
+      if (typeof payload.restore === 'boolean') safe.restore = payload.restore;
+      if (typeof payload.plan === 'string' && payload.plan.length <= 80) safe.plan = payload.plan;
+      if (typeof payload.preset === 'string' && payload.preset.length <= 80) safe.preset = payload.preset;
+      if (typeof payload.profile === 'string' && payload.profile.length <= 80) safe.profile = payload.profile;
+      if (!Object.keys(safe).length) continue;
+      pendingTweaks[id] = safe; count++;
+      document.querySelectorAll(`[data-tweak-id="${id}"]`).forEach(control => {
+        if (control.type === 'checkbox' && typeof safe.enabled === 'boolean') control.checked = safe.enabled;
+        if (control.tagName === 'SELECT' && typeof safe.value === 'string') control.value = safe.value;
+      });
+    }
+    profileOwned.clear(); updatePendingUI();
+    showToast(count ? `${count} imported action${count === 1 ? '' : 's'} queued for review.` : 'No compatible queued actions were found in that file.', count ? 'success' : 'warning');
+  }
+  document.getElementById('btn-export-plan')?.addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify({format:'batmaniscool-review-plan',version:1,createdAt:new Date().toISOString(),pending:pendingTweaks}, null, 2)], {type:'application/json'});
+    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'batmaniscool-review-plan.json'; link.click(); URL.revokeObjectURL(link.href);
+    showToast('Review plan exported. No Windows settings were changed.', 'success');
+  });
+  const importFile = document.getElementById('import-plan-file');
+  document.getElementById('btn-import-plan')?.addEventListener('click', () => importFile?.click());
+  importFile?.addEventListener('change', async event => {
+    const file = event.target.files?.[0]; if (!file) return;
+    try { queueImportedPlan(JSON.parse(await file.text())); } catch (error) { showToast(error.message || 'Could not import that plan.', 'warning'); }
+    event.target.value = '';
+  });
+  document.getElementById('btn-queue-history-undo')?.addEventListener('click', () => {
+    const history = getHistory(); let count = 0;
+    for (const item of history) {
+      if (item.reverted || !item.inverse || !availablePlanIds().has(item.tweakId)) continue;
+      pendingTweaks[item.tweakId] = item.inverse; count++;
+      document.querySelectorAll(`[data-tweak-id="${item.tweakId}"]`).forEach(control => {
+        if (control.type === 'checkbox' && typeof item.inverse.enabled === 'boolean') control.checked = item.inverse.enabled;
+        if (control.tagName === 'SELECT' && item.inverse.restore) control.value = '';
+      });
+    }
+    profileOwned.clear(); updatePendingUI();
+    showToast(count ? `${count} history undo action${count === 1 ? '' : 's'} queued. Press Apply Changes to run them.` : 'No reversible history entries are available.', count ? 'info' : 'warning');
+  });
+
   document.getElementById('btn-quick-optimize')?.addEventListener('click', () => {
     playAudioTone('success');
     ['optimize-ram', 'flush-dns', 'clean-temp'].forEach(tweakId => { pendingTweaks[tweakId] = {}; });

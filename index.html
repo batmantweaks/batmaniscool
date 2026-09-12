@@ -199,6 +199,7 @@
           <div class="nav-item" data-tab="tab-about"><i class="fa-solid fa-circle-info"></i><span>About</span></div>
           <div class="nav-item" data-tab="tab-support"><i class="fa-solid fa-life-ring"></i><span>Support</span></div>
           <div class="nav-item" data-tab="tab-privacy"><i class="fa-solid fa-shield-halved"></i><span>Privacy</span></div>
+          <div class="nav-item" data-tab="tab-settings"><i class="fa-solid fa-gear"></i><span>Settings</span></div>
         </nav>
       </div>
 
@@ -1132,6 +1133,16 @@
           <article class="info-page-card"><i class="fa-solid fa-lock"></i><h2>Account note</h2><p>The app login is a local convenience feature, not a replacement for a Windows account password or full security boundary.</p></article>
           <article class="info-page-card"><i class="fa-solid fa-wifi"></i><h2>Network behavior</h2><p>The current app does not send tuning data to a server. A future optional update checker would contact only the chosen release server after it is configured.</p></article>
         </div>
+      </section>
+
+      <section id="tab-settings" class="page-tab-content">
+        <div class="page-header"><div><h1 class="page-title">Settings &amp; backups</h1><p class="page-subtitle">Move a review plan between PCs and recover previous changes without applying anything automatically.</p></div></div>
+        <div class="info-page-grid settings-grid">
+          <article class="info-page-card"><i class="fa-solid fa-file-export"></i><h2>Export review plan</h2><p>Downloads the controls currently in your pending queue as a portable JSON file. Passwords and Windows values are never included.</p><button class="btn-secondary" id="btn-export-plan" type="button">Export pending plan</button></article>
+          <article class="info-page-card"><i class="fa-solid fa-file-import"></i><h2>Import review plan</h2><p>Load a plan created by batmaniscool. Imported entries are checked against controls available in this version and are only queued for your review.</p><input type="file" id="import-plan-file" accept="application/json,.json" hidden><button class="btn-secondary" id="btn-import-plan" type="button">Choose plan file</button></article>
+          <article class="info-page-card"><i class="fa-solid fa-clock-rotate-left"></i><h2>Undo applied history</h2><p>Queues reversible entries from History &amp; Undo. You still choose Apply Changes, and entries without an original-value restore remain untouched.</p><button class="btn-secondary" id="btn-queue-history-undo" type="button">Queue history undo</button></article>
+        </div>
+        <div class="queue-note"><i class="fa-solid fa-shield-halved"></i><span>Plans are local JSON files. Import never runs commands, and an imported plan cannot bypass the normal Apply Changes review.</span></div>
       </section>
 
       <section id="tab-maintenance" class="page-tab-content">
