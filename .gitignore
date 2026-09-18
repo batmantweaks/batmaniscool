@@ -8,3 +8,5 @@ qa-output/
 *.p12
 download_c418.js
 test_urls.js
+drag-macro/bin/
+drag-macro/obj/
